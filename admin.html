@@ -70,13 +70,22 @@
     display:flex; align-items:center; gap:14px; margin-bottom:12px;
   }
   .img-upload .preview{
+    position:relative;
     width:64px; height:64px; border-radius:10px;
     background:#0e1912; border:1px solid var(--line);
-    overflow:hidden; flex-shrink:0;
+    overflow:visible; flex-shrink:0;
     display:flex; align-items:center; justify-content:center;
     font-size:10px; color:rgba(255,255,255,0.4);
   }
-  .img-upload .preview img{ width:100%; height:100%; object-fit:cover; }
+  .img-upload .preview img{ width:100%; height:100%; object-fit:cover; border-radius:10px; }
+  .img-upload .preview .clear-btn{
+    position:absolute; top:-7px; right:-7px;
+    width:20px; height:20px; border-radius:50%;
+    background:#ff5555; color:#fff; border:none;
+    font-size:12px; line-height:20px; text-align:center;
+    cursor:pointer; display:none; padding:0;
+  }
+  .img-upload .preview.has-image .clear-btn{ display:block; }
   .img-upload .upload-btn{
     background:#0e1912; border:1px solid var(--line); color:#fff;
     padding:9px 14px; border-radius:8px; font-size:13px; cursor:pointer;
@@ -84,6 +93,22 @@
   .img-upload .upload-btn:hover{ border-color:var(--green); }
   .img-upload input[type="file"]{ display:none; }
   .upload-status{ font-size:12px; color:rgba(255,255,255,0.5); margin-left:8px; }
+
+  .share-box{
+    display:none;
+    align-items:center; justify-content:space-between; gap:10px;
+    background:#0e1912; border:1px solid var(--line); border-radius:8px;
+    padding:10px 12px; margin-top:14px; font-size:13px;
+  }
+  .share-box input{
+    flex:1; background:transparent; border:none; color:#fff;
+    font-size:12px; outline:none;
+  }
+  .share-box button{
+    background:transparent; border:1px solid var(--line); color:var(--green);
+    padding:7px 14px; border-radius:6px; font-size:12px; cursor:pointer; white-space:nowrap;
+  }
+  .share-box button:hover{ border-color:var(--green); }
 
   .save-bar{
     position:fixed; bottom:0; left:0; right:0;
@@ -205,9 +230,13 @@
       <input type="text" id="groupName">
     </div>
     <div class="field">
+      <label>Teks Ajakan (sebelum nama grup)</label>
+      <input type="text" id="inviteText" placeholder="Anda diundang untuk bergabung">
+    </div>
+    <div class="field">
       <label>Logo</label>
       <div class="img-upload">
-        <div class="preview" id="logoPreview">Belum ada</div>
+        <div class="preview" id="logoPreview">Belum ada<button type="button" class="clear-btn" data-clear="logo">×</button></div>
         <label class="upload-btn">
           Unggah gambar
           <input type="file" accept="image/*" id="logoFile">
@@ -219,7 +248,7 @@
     <div class="field">
       <label>Foto Profil</label>
       <div class="img-upload">
-        <div class="preview" id="avatarPreview">Belum ada</div>
+        <div class="preview" id="avatarPreview">Belum ada<button type="button" class="clear-btn" data-clear="avatar">×</button></div>
         <label class="upload-btn">
           Unggah gambar
           <input type="file" accept="image/*" id="avatarFile">
@@ -227,6 +256,31 @@
         <span class="upload-status" id="avatarStatus"></span>
       </div>
       <input type="url" id="avatarUrl" placeholder="URL foto profil (terisi otomatis setelah unggah)">
+    </div>
+  </div>
+
+  <div class="group">
+    <h2>Header (bagian paling atas halaman)</h2>
+    <div class="link-block">
+      <div class="label-name">Ikon Unduh (pojok kiri atas)</div>
+      <div class="row2">
+        <div class="field"><label>Link tujuan</label><input type="url" id="headerDownloadUrl"></div>
+        <div class="field"><label>Jeda (detik)</label><input type="number" id="headerDownloadSeconds" min="0"></div>
+      </div>
+    </div>
+    <div class="link-block">
+      <div class="label-name">Logo &amp; Nama Brand (klik)</div>
+      <div class="row2">
+        <div class="field"><label>Link tujuan</label><input type="url" id="brandUrl"></div>
+        <div class="field"><label>Jeda (detik)</label><input type="number" id="brandSeconds" min="0"></div>
+      </div>
+    </div>
+    <div class="link-block">
+      <div class="label-name">Menu (garis 3, pojok kanan atas)</div>
+      <div class="row2">
+        <div class="field"><label>Link tujuan</label><input type="url" id="menuUrl"></div>
+        <div class="field"><label>Jeda (detik)</label><input type="number" id="menuSeconds" min="0"></div>
+      </div>
     </div>
   </div>
 
@@ -324,9 +378,13 @@
       <input type="text" id="post_groupName">
     </div>
     <div class="field">
+      <label>Teks Ajakan <span class="default-hint">(kosongkan = pakai Data Utama)</span></label>
+      <input type="text" id="post_inviteText">
+    </div>
+    <div class="field">
       <label>Foto Profil <span class="default-hint">(kosongkan = pakai Data Utama)</span></label>
       <div class="img-upload">
-        <div class="preview" id="post_avatarPreview">Belum ada</div>
+        <div class="preview" id="post_avatarPreview">Belum ada<button type="button" class="clear-btn" data-clear="post_avatar">×</button></div>
         <label class="upload-btn">
           Unggah gambar
           <input type="file" accept="image/*" id="post_avatarFile">
@@ -342,6 +400,28 @@
     <div class="field">
       <label>Logo <span class="default-hint">(kosongkan = pakai Data Utama)</span></label>
       <input type="url" id="post_logoUrl">
+    </div>
+
+    <div class="link-block">
+      <div class="label-name">Ikon Unduh (pojok kiri atas)</div>
+      <div class="row2">
+        <div class="field"><label>Link tujuan</label><input type="url" id="post_headerDownloadUrl"></div>
+        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_headerDownloadSeconds" min="0"></div>
+      </div>
+    </div>
+    <div class="link-block">
+      <div class="label-name">Logo &amp; Nama Brand (klik)</div>
+      <div class="row2">
+        <div class="field"><label>Link tujuan</label><input type="url" id="post_brandUrl"></div>
+        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_brandSeconds" min="0"></div>
+      </div>
+    </div>
+    <div class="link-block">
+      <div class="label-name">Menu (garis 3)</div>
+      <div class="row2">
+        <div class="field"><label>Link tujuan</label><input type="url" id="post_menuUrl"></div>
+        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_menuSeconds" min="0"></div>
+      </div>
     </div>
 
     <div class="link-block">
@@ -392,6 +472,10 @@
       <button type="button" id="savePostBtn" style="flex:1;">Simpan Postingan</button>
     </div>
     <div class="save-msg" id="postSaveMsg"></div>
+    <div class="share-box" id="postShareBox">
+      <input type="text" id="postShareLink" readonly>
+      <button type="button" id="postShareBtn">Bagikan</button>
+    </div>
   </div>
 </div>
 
@@ -460,12 +544,16 @@ async function loadData() {
 
   document.getElementById("brandName").value = data.brandName || "GrupKu";
   document.getElementById("groupName").value = data.groupName || "";
+  document.getElementById("inviteText").value = data.inviteText || "";
   document.getElementById("logoUrl").value = data.logoUrl || "";
   document.getElementById("avatarUrl").value = data.avatarUrl || "";
   updatePreview("logoPreview", data.logoUrl);
   updatePreview("avatarPreview", data.avatarUrl);
 
   const links = data.links || {};
+  setLink("headerDownload", links.headerDownload);
+  setLink("brand", links.brand);
+  setLink("menu", links.menu);
   setLink("join", links.join);
   setLink("download", links.download);
   setLink("x", links.x);
@@ -491,8 +579,28 @@ function setLink(key, obj) {
 
 function updatePreview(elId, url) {
   const el = document.getElementById(elId);
-  el.innerHTML = url ? `<img src="${url}">` : "Belum ada";
+  const clearBtn = el.querySelector(".clear-btn");
+  if (url) {
+    el.innerHTML = `<img src="${url}">`;
+    if (clearBtn) el.appendChild(clearBtn);
+    el.classList.add("has-image");
+  } else {
+    el.innerHTML = "Belum ada";
+    if (clearBtn) el.appendChild(clearBtn);
+    el.classList.remove("has-image");
+  }
 }
+
+document.querySelectorAll(".clear-btn").forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const key = btn.dataset.clear; // "logo" | "avatar" | "post_avatar"
+    const urlFieldId = key === "post_avatar" ? "post_avatarUrl" : key + "Url";
+    const previewId = key === "post_avatar" ? "post_avatarPreview" : key + "Preview";
+    document.getElementById(urlFieldId).value = "";
+    updatePreview(previewId, "");
+  });
+});
 
 async function uploadToImgbb(file, statusElId, previewElId, urlFieldId) {
   const statusEl = document.getElementById(statusElId);
@@ -545,11 +653,15 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
   const payload = {
     brandName: document.getElementById("brandName").value.trim(),
     groupName: document.getElementById("groupName").value.trim(),
+    inviteText: document.getElementById("inviteText").value.trim(),
     logoUrl: document.getElementById("logoUrl").value.trim(),
     avatarUrl: document.getElementById("avatarUrl").value.trim(),
     copyrightText: document.getElementById("copyrightText").value.trim(),
     defaultSeconds: Number(document.getElementById("defaultSeconds").value) || 5,
     links: {
+      headerDownload: getLinkPayload("headerDownload"),
+      brand: getLinkPayload("brand"),
+      menu: getLinkPayload("menu"),
       join: getLinkPayload("join"),
       download: getLinkPayload("download"),
       x: getLinkPayload("x"),
@@ -626,8 +738,8 @@ async function deletePost(id) {
   renderPostList();
 }
 
-const postFieldKeys = ["groupName","avatarUrl","brandName","logoUrl"];
-const postLinkKeys = ["join","download","x","youtube","instagram","facebook"];
+const postFieldKeys = ["groupName","inviteText","avatarUrl","brandName","logoUrl"];
+const postLinkKeys = ["headerDownload","brand","menu","join","download","x","youtube","instagram","facebook"];
 let editingPostId = null;
 
 document.getElementById("newPostBtn").addEventListener("click", () => openPostEditor(null, {}));
@@ -635,6 +747,8 @@ document.getElementById("cancelPostBtn").addEventListener("click", closePostEdit
 
 function openPostEditor(id, data) {
   editingPostId = id;
+  document.getElementById("postShareBox").style.display = "none";
+  document.getElementById("postSaveMsg").textContent = "";
   document.getElementById("postEditorTitle").textContent = id ? `Edit: ${id}` : "Postingan Baru";
   const idField = document.getElementById("post_id");
   idField.value = id || "";
@@ -660,6 +774,7 @@ function openPostEditor(id, data) {
 
 function closePostEditor() {
   document.getElementById("postEditor").style.display = "none";
+  document.getElementById("postShareBox").style.display = "none";
   editingPostId = null;
 }
 
@@ -695,13 +810,38 @@ document.getElementById("savePostBtn").addEventListener("click", async () => {
   try {
     await setDoc(doc(db, "posts", id), payload);
     msg.textContent = "Tersimpan.";
+    editingPostId = id;
+    idField.value = id;
+    idField.disabled = true;
     await renderPostList();
-    setTimeout(() => { closePostEditor(); msg.textContent = ""; }, 800);
+    showPostShareLink(id);
   } catch (err) {
     msg.textContent = "Gagal menyimpan, coba lagi.";
   }
   btn.disabled = false;
   btn.textContent = "Simpan Postingan";
+});
+
+function showPostShareLink(id) {
+  const link = `${window.location.origin}${window.location.pathname.replace(/admin\.html$/, "")}index.html?id=${encodeURIComponent(id)}`;
+  const box = document.getElementById("postShareBox");
+  const input = document.getElementById("postShareLink");
+  input.value = link;
+  box.style.display = "flex";
+}
+
+document.getElementById("postShareBtn").addEventListener("click", async () => {
+  const link = document.getElementById("postShareLink").value;
+  if (navigator.share) {
+    try { await navigator.share({ title: "Link postingan", url: link }); return; } catch (err) { /* dibatalkan, lanjut fallback */ }
+  }
+  try {
+    await navigator.clipboard.writeText(link);
+    const btn = document.getElementById("postShareBtn");
+    const original = btn.textContent;
+    btn.textContent = "Tersalin!";
+    setTimeout(() => { btn.textContent = original; }, 1500);
+  } catch (err) { /* abaikan */ }
 });
 </script>
 </body>
