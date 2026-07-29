@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mengalihkan...</title>
+<style>
+  :root{
+    --green:#25D366;
+    --green-dark:#1DA851;
+    --green-deep:#12331f;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--green-deep);
+    color:#fff;
+    display:flex;
+    justify-content:center;
+    min-height:100vh;
+  }
+  .wrap{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:32px 24px;
+    text-align:center;
+  }
+  .ring{
+    position:relative;
+    width:120px; height:120px;
+    margin-bottom:28px;
+  }
+  .ring svg{
+    width:100%; height:100%;
+    transform:rotate(-90deg);
+  }
+  .ring circle{
+    fill:none;
+    stroke-width:6;
+  }
+  .ring .bg{ stroke:rgba(255,255,255,0.15); }
+  .ring .fg{
+    stroke:var(--green);
+    stroke-linecap:round;
+    transition:stroke-dashoffset 1s linear;
+  }
+  .ring .count{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:34px;
+    font-weight:700;
+  }
+  h1{
+    font-size:20px;
+    font-weight:600;
+    margin-bottom:10px;
+  }
+  p{
+    font-size:14px;
+    color:rgba(255,255,255,0.65);
+    margin-bottom:28px;
+  }
+  .ad-slot{
+    width:100%;
+    max-width:340px;
+    min-height:120px;
+    border:1px dashed rgba(255,255,255,0.25);
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:rgba(255,255,255,0.4);
+    font-size:13px;
+    margin-bottom:28px;
+  }
+  .go-btn{
+    display:inline-block;
+    background:var(--green);
+    color:#fff;
+    text-decoration:none;
+    font-size:16px;
+    font-weight:600;
+    padding:14px 36px;
+    border-radius:32px;
+    opacity:0.4;
+    pointer-events:none;
+    transition:opacity .2s ease, background .15s ease;
+  }
+  .go-btn.ready{
+    opacity:1;
+    pointer-events:auto;
+  }
+  .go-btn.ready:hover{ background:var(--green-dark); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="ring">
+    <svg viewBox="0 0 120 120">
+      <circle class="bg" cx="60" cy="60" r="54"></circle>
+      <circle class="fg" id="ringFg" cx="60" cy="60" r="54"></circle>
+    </svg>
+    <div class="count" id="countNum">5</div>
+  </div>
+  <h1>Tautan Anda sedang disiapkan</h1>
+  <p>Anda akan dialihkan secara otomatis dalam beberapa detik</p>
+
+  <!-- Slot iklan (opsional) -->
+  <div class="ad-slot" id="adSlot">Ruang iklan</div>
+
+  <a class="go-btn" id="goBtn" href="#">Lanjutkan</a>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+/* =========================================================
+   ISI DENGAN CONFIG FIREBASE PROJECT BARU ANDA (sama seperti di login.html/admin.html)
+   ========================================================= */
+const firebaseConfig = {
+  apiKey: "ISI_API_KEY",
+  authDomain: "ISI_PROJECT.firebaseapp.com",
+  projectId: "ISI_PROJECT",
+  storageBucket: "ISI_PROJECT.appspot.com",
+  messagingSenderId: "ISI_SENDER_ID",
+  appId: "ISI_APP_ID"
+};
+/* ========================================================= */
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const CONFIG_DOC = doc(db, "config", "utama");
+
+const goBtn = document.getElementById("goBtn");
+const countNum = document.getElementById("countNum");
+const ringFg = document.getElementById("ringFg");
+
+const R = 54;
+const CIRC = 2 * Math.PI * R;
+ringFg.style.strokeDasharray = CIRC;
+ringFg.style.strokeDashoffset = 0;
+
+const params = new URLSearchParams(window.location.search);
+const key = params.get("to"); // join | download | x | youtube | instagram | facebook
+
+const snap = await getDoc(CONFIG_DOC);
+const data = snap.exists() ? snap.data() : {};
+const defaultSeconds = data.defaultSeconds ?? 5;
+const dest = (key && data.links && data.links[key]) ? data.links[key] : null;
+const target = dest && dest.url ? dest.url : null;
+const REDIRECT_SECONDS = (dest && dest.seconds) ? dest.seconds : defaultSeconds;
+
+if (!target) {
+  document.querySelector("h1").textContent = "Tautan tidak ditemukan";
+  document.querySelector("p").textContent = "Parameter tujuan tidak valid atau belum diatur.";
+  document.getElementById("adSlot").style.display = "none";
+  countNum.textContent = "!";
+} else {
+  goBtn.href = target;
+  let remaining = REDIRECT_SECONDS;
+  countNum.textContent = remaining;
+
+  const timer = setInterval(() => {
+    remaining--;
+    const progress = 1 - remaining / REDIRECT_SECONDS;
+    ringFg.style.strokeDashoffset = CIRC * (1 - progress);
+
+    if (remaining <= 0) {
+      clearInterval(timer);
+      countNum.textContent = "✓";
+      goBtn.classList.add("ready");
+      window.location.href = target;
+    } else {
+      countNum.textContent = remaining;
+    }
+  }, 1000);
+}
+</script>
+</body>
+</html>

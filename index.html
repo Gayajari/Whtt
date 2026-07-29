@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gabung Grup</title>
+<style>
+  :root{
+    --green:#25D366;
+    --green-dark:#1DA851;
+    --ink:#0b1a12;
+    --dark:#0e1912;
+    --dark-2:#132018;
+    --line:#e7ede9;
+    --muted:#6b7a71;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:#fff;
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+  }
+  .phone{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    background:#fff;
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* ===== Header ===== */
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 20px;
+    border-bottom:1px solid var(--line);
+  }
+  .dl-icon{
+    width:38px; height:38px;
+    border-radius:50%;
+    background:var(--green);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .dl-icon svg{width:18px;height:18px;fill:#fff;}
+  .brand{
+    display:flex; align-items:center; gap:8px;
+    font-weight:700; font-size:20px;
+    color:var(--green-dark);
+  }
+  .brand img{width:26px; height:26px; display:block;}
+  .menu-icon{display:flex; flex-direction:column; gap:5px; cursor:pointer;}
+  .menu-icon span{width:22px; height:2px; background:var(--ink); display:block;}
+
+  /* ===== Hero / undangan ===== */
+  main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    padding:44px 28px 30px;
+  }
+  .avatar{
+    width:150px; height:150px;
+    border-radius:50%;
+    overflow:hidden;
+    background:#eee;
+    margin-bottom:28px;
+    box-shadow:0 6px 24px rgba(0,0,0,0.08);
+  }
+  .avatar img{width:100%; height:100%; object-fit:cover; display:block;}
+  .invite-text{
+    font-size:26px;
+    line-height:1.35;
+    color:var(--ink);
+    font-weight:400;
+  }
+  .invite-text b{font-weight:700;}
+  .join-btn{
+    margin-top:36px;
+    display:inline-block;
+    background:var(--green);
+    color:#fff;
+    font-size:18px;
+    font-weight:600;
+    text-decoration:none;
+    padding:16px 40px;
+    border-radius:32px;
+    transition:background .15s ease, transform .1s ease;
+  }
+  .join-btn:active{transform:scale(0.98);}
+  .join-btn:hover{background:var(--green-dark);}
+
+  .divider-text{
+    margin-top:48px;
+    color:var(--muted);
+    font-size:15px;
+  }
+  .divider-text a{
+    display:block;
+    margin-top:10px;
+    color:var(--green-dark);
+    font-weight:700;
+    font-size:17px;
+    text-decoration:underline;
+  }
+
+  /* ===== Dark bottom bar with dl + socials ===== */
+  .bottom-bar{
+    background:var(--dark);
+    padding:34px 24px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .dl-btn{
+    width:100%;
+    max-width:340px;
+    background:var(--green);
+    color:#fff;
+    text-decoration:none;
+    text-align:center;
+    padding:16px 0;
+    border-radius:32px;
+    font-size:18px;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+  }
+  .dl-btn svg{width:18px;height:18px;fill:#fff;}
+  .socials{
+    display:flex;
+    gap:16px;
+    margin-top:28px;
+  }
+  .socials a{
+    width:48px; height:48px;
+    border-radius:50%;
+    border:1.5px solid rgba(255,255,255,0.25);
+    display:flex; align-items:center; justify-content:center;
+    color:#fff;
+    text-decoration:none;
+  }
+  .socials svg{width:20px; height:20px; fill:#fff;}
+
+  /* ===== Footer lanjutan ===== */
+  footer{
+    background:var(--dark-2);
+    padding:36px 24px 30px;
+  }
+  .foot-brand{
+    display:flex; align-items:center; gap:10px;
+    color:#fff; font-weight:700; font-size:19px;
+    margin-bottom:28px;
+  }
+  .foot-brand img{width:24px;height:24px;}
+  .foot-cols{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+    margin-bottom:28px;
+  }
+  .foot-cols h4{
+    color:var(--muted);
+    font-weight:400;
+    font-size:14px;
+    margin-bottom:14px;
+  }
+  .foot-cols a{
+    display:block;
+    color:#e7ede9;
+    text-decoration:none;
+    font-size:15px;
+    margin-bottom:14px;
+  }
+  .foot-legal{
+    border-top:1px solid rgba(255,255,255,0.08);
+    padding-top:22px;
+    color:var(--muted);
+    font-size:13px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .foot-legal a{color:var(--muted); text-decoration:none;}
+  .lang-pill{
+    margin-top:16px;
+    align-self:flex-start;
+    border:1px solid rgba(255,255,255,0.25);
+    color:#fff;
+    padding:10px 18px;
+    border-radius:24px;
+    font-size:14px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    width:fit-content;
+  }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <header>
+    <div class="dl-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h4V4h4v6h4l-6 6zm-7 2h14v2H5v-2z"/></svg>
+    </div>
+    <div class="brand">
+      <img id="logoTop" src="" alt="logo">
+      <span id="brandName">GrupKu</span>
+    </div>
+    <div class="menu-icon"><span></span><span></span><span></span></div>
+  </header>
+
+  <main>
+    <div class="avatar"><img id="avatarImg" src="" alt="foto profil"></div>
+    <div class="invite-text">
+      Anda diundang untuk bergabung<br>
+      "<b id="groupName">Nama Grup</b>"
+    </div>
+    <a class="join-btn" id="joinBtn" href="#">Bergabung ke obrolan</a>
+
+    <div class="divider-text">
+      Belum punya aplikasinya?
+      <a id="downloadLinkTop" href="#">Unduh Sekarang</a>
+    </div>
+  </main>
+
+  <section class="bottom-bar">
+    <a class="dl-btn" id="downloadBtn" href="#">
+      Unduh
+      <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h4V4h4v6h4l-6 6zm-7 2h14v2H5v-2z"/></svg>
+    </a>
+    <div class="socials">
+      <a id="soc-x" href="#" aria-label="X">
+        <svg viewBox="0 0 24 24"><path d="M18.9 2H22l-7.4 8.4L23.3 22h-6.9l-5.4-6.6L4.8 22H1.6l7.9-9L1 2h7.1l4.9 6.1L18.9 2zm-1.2 18h1.9L7.4 3.9H5.4L17.7 20z"/></svg>
+      </a>
+      <a id="soc-yt" href="#" aria-label="YouTube">
+        <svg viewBox="0 0 24 24"><path d="M23 12s0-3.6-.5-5.2c-.3-1-1-1.8-2-2C18.9 4.3 12 4.3 12 4.3s-6.9 0-8.5.5c-1 .2-1.7 1-2 2C1 8.4 1 12 1 12s0 3.6.5 5.2c.3 1 1 1.7 2 2 1.6.5 8.5.5 8.5.5s6.9 0 8.5-.5c1-.3 1.7-1 2-2 .5-1.6.5-5.2.5-5.2zM9.8 15.5v-7l6 3.5-6 3.5z"/></svg>
+      </a>
+      <a id="soc-ig" href="#" aria-label="Instagram">
+        <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 2 .3 2.4.5.6.2 1 .5 1.5 1 .4.4.7.9 1 1.5.2.4.4 1.2.5 2.4.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 2-.5 2.4-.2.6-.5 1-1 1.5-.4.4-.9.7-1.5 1-.4.2-1.2.4-2.4.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-2-.3-2.4-.5-.6-.2-1-.5-1.5-1-.4-.4-.7-.9-1-1.5-.2-.4-.4-1.2-.5-2.4C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-2 .5-2.4.2-.6.5-1 1-1.5.4-.4.9-.7 1.5-1 .4-.2 1.2-.4 2.4-.5C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-1 .1-1.6.2-1.9.4-.5.2-.8.4-1.2.7-.3.3-.5.7-.7 1.2-.1.3-.3.9-.4 1.9-.1 1.2-.1 1.5-.1 4.7s0 3.5.1 4.7c.1 1 .3 1.6.4 1.9.2.5.4.8.7 1.2.3.3.7.5 1.2.7.3.1.9.3 1.9.4 1.2.1 1.5.1 4.7.1s3.5 0 4.7-.1c1-.1 1.6-.3 1.9-.4.5-.2.8-.4 1.2-.7.3-.3.5-.7.7-1.2.1-.3.3-.9.4-1.9.1-1.2.1-1.5.1-4.7s0-3.5-.1-4.7c-.1-1-.3-1.6-.4-1.9-.2-.5-.4-.8-.7-1.2-.3-.3-.7-.5-1.2-.7-.3-.1-.9-.3-1.9-.4-1.2-.1-1.5-.1-4.7-.1zm0 3.5a4.5 4.5 0 110 9 4.5 4.5 0 010-9zm0 1.8a2.7 2.7 0 100 5.4 2.7 2.7 0 000-5.4zm5.7-2a1.1 1.1 0 110 2.1 1.1 1.1 0 010-2.1z"/></svg>
+      </a>
+      <a id="soc-fb" href="#" aria-label="Facebook">
+        <svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 10-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0022 12z"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot-brand">
+      <img id="logoBottom" src="" alt="logo">
+      <span id="brandNameBottom">GrupKu</span>
+    </div>
+    <div class="foot-cols">
+      <div>
+        <h4>Yang kami lakukan</h4>
+        <a href="#">Fitur</a>
+        <a href="#">Blog</a>
+        <a href="#">Keamanan</a>
+        <a href="#">Untuk Bisnis</a>
+      </div>
+      <div>
+        <h4>Siapa kami</h4>
+        <a href="#">Tentang kami</a>
+        <a href="#">Karier</a>
+        <a href="#">Pusat Merek</a>
+        <a href="#">Privasi</a>
+      </div>
+    </div>
+    <div class="foot-legal">
+      <a href="#">Peta situs</a>
+      <a href="#">Ketentuan &amp; Kebijakan Privasi</a>
+      <span id="copyrightLine">2026 © GrupKu</span>
+      <div class="lang-pill">Bahasa Indonesia ▾</div>
+    </div>
+  </footer>
+
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+/* =========================================================
+   ISI DENGAN CONFIG FIREBASE PROJECT BARU ANDA (sama seperti di login.html/admin.html)
+   ========================================================= */
+const firebaseConfig = {
+  apiKey: "ISI_API_KEY",
+  authDomain: "ISI_PROJECT.firebaseapp.com",
+  projectId: "ISI_PROJECT",
+  storageBucket: "ISI_PROJECT.appspot.com",
+  messagingSenderId: "ISI_SENDER_ID",
+  appId: "ISI_APP_ID"
+};
+/* ========================================================= */
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const CONFIG_DOC = doc(db, "config", "utama");
+
+onSnapshot(CONFIG_DOC, (snap) => {
+  if (!snap.exists()) return;
+  const data = snap.data();
+
+  document.getElementById("brandName").textContent = data.brandName || "GrupKu";
+  document.getElementById("brandNameBottom").textContent = data.brandName || "GrupKu";
+  if (data.logoUrl) {
+    document.getElementById("logoTop").src = data.logoUrl;
+    document.getElementById("logoBottom").src = data.logoUrl;
+  }
+  if (data.avatarUrl) {
+    document.getElementById("avatarImg").src = data.avatarUrl; // foto profil: langsung, tidak lewat redirect
+  }
+  document.getElementById("groupName").textContent = data.groupName || "";
+  document.getElementById("copyrightLine").textContent = data.copyrightText || "";
+});
+
+document.getElementById("joinBtn").href = "redirect.html?to=join";
+document.getElementById("downloadLinkTop").href = "redirect.html?to=download";
+document.getElementById("downloadBtn").href = "redirect.html?to=download";
+document.getElementById("soc-x").href = "redirect.html?to=x";
+document.getElementById("soc-yt").href = "redirect.html?to=youtube";
+document.getElementById("soc-ig").href = "redirect.html?to=instagram";
+document.getElementById("soc-fb").href = "redirect.html?to=facebook";
+</script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Admin</title>
+<style>
+  :root{ --green:#25D366; --green-dark:#1DA851; --dark:#0e1912; }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--dark);
+    color:#fff;
+    min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    padding:20px;
+  }
+  .card{
+    width:100%; max-width:380px;
+    background:#132018;
+    border-radius:16px;
+    padding:36px 28px;
+  }
+  h1{ font-size:20px; margin-bottom:4px; }
+  p.sub{ color:rgba(255,255,255,0.5); font-size:13px; margin-bottom:26px; }
+  label{ display:block; font-size:13px; color:rgba(255,255,255,0.7); margin-bottom:6px; }
+  input{
+    width:100%;
+    background:#0e1912;
+    border:1px solid rgba(255,255,255,0.15);
+    color:#fff;
+    padding:12px 14px;
+    border-radius:8px;
+    font-size:14px;
+    margin-bottom:18px;
+    outline:none;
+  }
+  input:focus{ border-color:var(--green); }
+  button{
+    width:100%;
+    background:var(--green);
+    color:#fff;
+    border:none;
+    padding:13px 0;
+    border-radius:8px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  button:hover{ background:var(--green-dark); }
+  button:disabled{ opacity:0.6; cursor:default; }
+  .err{ color:#ff6b6b; font-size:13px; margin-top:14px; min-height:16px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Masuk ke Dasbor</h1>
+  <p class="sub">Kelola semua link &amp; foto grup dari sini</p>
+
+  <form id="loginForm">
+    <label for="email">Email</label>
+    <input type="email" id="email" required autocomplete="username">
+    <label for="password">Kata sandi</label>
+    <input type="password" id="password" required autocomplete="current-password">
+    <button type="submit" id="loginBtn">Masuk</button>
+    <div class="err" id="errMsg"></div>
+  </form>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+/* =========================================================
+   ISI DENGAN CONFIG FIREBASE PROJECT BARU ANDA
+   (Firebase Console → Project settings → General → Your apps → SDK setup and configuration)
+   ========================================================= */
+const firebaseConfig = {
+  apiKey: "ISI_API_KEY",
+  authDomain: "ISI_PROJECT.firebaseapp.com",
+  projectId: "ISI_PROJECT",
+  storageBucket: "ISI_PROJECT.appspot.com",
+  messagingSenderId: "ISI_SENDER_ID",
+  appId: "ISI_APP_ID"
+};
+/* ========================================================= */
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, (user) => {
+  if (user) window.location.href = "admin.html";
+});
+
+const form = document.getElementById("loginForm");
+const errMsg = document.getElementById("errMsg");
+const loginBtn = document.getElementById("loginBtn");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  errMsg.textContent = "";
+  loginBtn.disabled = true;
+  loginBtn.textContent = "Memproses...";
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    window.location.href = "admin.html";
+  } catch (err) {
+    errMsg.textContent = "Email atau kata sandi salah.";
+    loginBtn.disabled = false;
+    loginBtn.textContent = "Masuk";
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dasbor Admin</title>
+<style>
+  :root{ --green:#25D366; --green-dark:#1DA851; --dark:#0e1912; --card:#132018; --line:rgba(255,255,255,0.1); }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--dark);
+    color:#fff;
+    min-height:100vh;
+  }
+  header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 24px;
+    border-bottom:1px solid var(--line);
+    position:sticky; top:0; background:var(--dark); z-index:10;
+  }
+  header h1{ font-size:17px; font-weight:600; }
+  .logout{
+    background:transparent; border:1px solid var(--line); color:#fff;
+    padding:8px 16px; border-radius:8px; font-size:13px; cursor:pointer;
+  }
+  .logout:hover{ border-color:var(--green); }
+
+  main{ max-width:640px; margin:0 auto; padding:24px 18px 100px; }
+
+  .group{
+    background:var(--card);
+    border-radius:14px;
+    padding:20px;
+    margin-bottom:20px;
+  }
+  .group h2{
+    font-size:14px;
+    color:var(--green);
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    margin-bottom:16px;
+  }
+  .field{ margin-bottom:16px; }
+  .field:last-child{ margin-bottom:0; }
+  .field label{
+    display:block; font-size:13px; color:rgba(255,255,255,0.65); margin-bottom:6px;
+  }
+  .field input[type="text"], .field input[type="url"], .field input[type="number"]{
+    width:100%;
+    background:#0e1912;
+    border:1px solid var(--line);
+    color:#fff;
+    padding:11px 13px;
+    border-radius:8px;
+    font-size:14px;
+    outline:none;
+  }
+  .field input:focus{ border-color:var(--green); }
+  .row2{ display:grid; grid-template-columns:1fr 110px; gap:10px; }
+
+  .link-block{
+    border-top:1px solid var(--line);
+    padding-top:16px; margin-top:16px;
+  }
+  .link-block:first-of-type{ border-top:none; padding-top:0; margin-top:0; }
+  .link-block .label-name{ font-size:14px; font-weight:600; margin-bottom:12px; }
+
+  .img-upload{
+    display:flex; align-items:center; gap:14px; margin-bottom:12px;
+  }
+  .img-upload .preview{
+    width:64px; height:64px; border-radius:10px;
+    background:#0e1912; border:1px solid var(--line);
+    overflow:hidden; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:10px; color:rgba(255,255,255,0.4);
+  }
+  .img-upload .preview img{ width:100%; height:100%; object-fit:cover; }
+  .img-upload .upload-btn{
+    background:#0e1912; border:1px solid var(--line); color:#fff;
+    padding:9px 14px; border-radius:8px; font-size:13px; cursor:pointer;
+  }
+  .img-upload .upload-btn:hover{ border-color:var(--green); }
+  .img-upload input[type="file"]{ display:none; }
+  .upload-status{ font-size:12px; color:rgba(255,255,255,0.5); margin-left:8px; }
+
+  .save-bar{
+    position:fixed; bottom:0; left:0; right:0;
+    background:var(--card);
+    border-top:1px solid var(--line);
+    padding:14px 18px;
+    display:flex; justify-content:center;
+  }
+  .save-bar button{
+    width:100%; max-width:600px;
+    background:var(--green); color:#fff; border:none;
+    padding:14px 0; border-radius:10px;
+    font-size:15px; font-weight:600; cursor:pointer;
+  }
+  .save-bar button:hover{ background:var(--green-dark); }
+  .save-bar button:disabled{ opacity:0.6; cursor:default; }
+  .save-msg{
+    text-align:center; font-size:13px; margin-top:8px; color:var(--green);
+    min-height:16px;
+  }
+  .loading{ text-align:center; padding:60px 20px; color:rgba(255,255,255,0.5); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Dasbor Grup</h1>
+  <button class="logout" id="logoutBtn">Keluar</button>
+</header>
+
+<div class="loading" id="loadingMsg">Memuat data...</div>
+
+<main id="mainContent" style="display:none;">
+
+  <div class="group">
+    <h2>Profil &amp; Brand</h2>
+    <div class="field">
+      <label>Nama Brand (header &amp; footer)</label>
+      <input type="text" id="brandName">
+    </div>
+    <div class="field">
+      <label>Nama Grup (judul undangan)</label>
+      <input type="text" id="groupName">
+    </div>
+    <div class="field">
+      <label>Logo</label>
+      <div class="img-upload">
+        <div class="preview" id="logoPreview">Belum ada</div>
+        <label class="upload-btn">
+          Unggah gambar
+          <input type="file" accept="image/*" id="logoFile">
+        </label>
+        <span class="upload-status" id="logoStatus"></span>
+      </div>
+      <input type="url" id="logoUrl" placeholder="URL logo (terisi otomatis setelah unggah)">
+    </div>
+    <div class="field">
+      <label>Foto Profil</label>
+      <div class="img-upload">
+        <div class="preview" id="avatarPreview">Belum ada</div>
+        <label class="upload-btn">
+          Unggah gambar
+          <input type="file" accept="image/*" id="avatarFile">
+        </label>
+        <span class="upload-status" id="avatarStatus"></span>
+      </div>
+      <input type="url" id="avatarUrl" placeholder="URL foto profil (terisi otomatis setelah unggah)">
+    </div>
+  </div>
+
+  <div class="group">
+    <h2>Tombol Utama</h2>
+    <div class="link-block">
+      <div class="label-name">Bergabung ke Obrolan</div>
+      <div class="row2">
+        <div class="field">
+          <label>Link tujuan</label>
+          <input type="url" id="joinUrl">
+        </div>
+        <div class="field">
+          <label>Jeda (detik)</label>
+          <input type="number" id="joinSeconds" min="0">
+        </div>
+      </div>
+    </div>
+    <div class="link-block">
+      <div class="label-name">Unduh</div>
+      <div class="row2">
+        <div class="field">
+          <label>Link tujuan</label>
+          <input type="url" id="downloadUrl">
+        </div>
+        <div class="field">
+          <label>Jeda (detik)</label>
+          <input type="number" id="downloadSeconds" min="0">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="group">
+    <h2>Sosial Media</h2>
+    <div class="link-block">
+      <div class="label-name">X (Twitter)</div>
+      <div class="row2">
+        <div class="field"><label>Link</label><input type="url" id="xUrl"></div>
+        <div class="field"><label>Jeda (detik)</label><input type="number" id="xSeconds" min="0"></div>
+      </div>
+    </div>
+    <div class="link-block">
+      <div class="label-name">YouTube</div>
+      <div class="row2">
+        <div class="field"><label>Link</label><input type="url" id="youtubeUrl"></div>
+        <div class="field"><label>Jeda (detik)</label><input type="number" id="youtubeSeconds" min="0"></div>
+      </div>
+    </div>
+    <div class="link-block">
+      <div class="label-name">Instagram</div>
+      <div class="row2">
+        <div class="field"><label>Link</label><input type="url" id="instagramUrl"></div>
+        <div class="field"><label>Jeda (detik)</label><input type="number" id="instagramSeconds" min="0"></div>
+      </div>
+    </div>
+    <div class="link-block">
+      <div class="label-name">Facebook</div>
+      <div class="row2">
+        <div class="field"><label>Link</label><input type="url" id="facebookUrl"></div>
+        <div class="field"><label>Jeda (detik)</label><input type="number" id="facebookSeconds" min="0"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="group">
+    <h2>Lainnya</h2>
+    <div class="field">
+      <label>Teks Copyright</label>
+      <input type="text" id="copyrightText">
+    </div>
+    <div class="field">
+      <label>Jeda default (detik) — dipakai kalau salah satu link di atas jedanya kosong</label>
+      <input type="number" id="defaultSeconds" min="0">
+    </div>
+  </div>
+
+</main>
+
+<div class="save-bar" id="saveBar" style="display:none;">
+  <div style="width:100%; max-width:600px; margin:0 auto;">
+    <button id="saveBtn">Simpan Perubahan</button>
+    <div class="save-msg" id="saveMsg"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+/* =========================================================
+   ISI DENGAN CONFIG FIREBASE PROJECT BARU ANDA (sama seperti di login.html)
+   ========================================================= */
+const firebaseConfig = {
+  apiKey: "ISI_API_KEY",
+  authDomain: "ISI_PROJECT.firebaseapp.com",
+  projectId: "ISI_PROJECT",
+  storageBucket: "ISI_PROJECT.appspot.com",
+  messagingSenderId: "ISI_SENDER_ID",
+  appId: "ISI_APP_ID"
+};
+
+// API key imgbb (imgbb.com → dapatkan API key gratis)
+const IMGBB_API_KEY = "ISI_IMGBB_API_KEY";
+/* ========================================================= */
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const CONFIG_DOC = doc(db, "config", "utama");
+
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
+    loadData();
+  }
+});
+
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  await signOut(auth);
+  window.location.href = "login.html";
+});
+
+const fieldIds = [
+  "brandName","groupName","logoUrl","avatarUrl",
+  "joinUrl","joinSeconds","downloadUrl","downloadSeconds",
+  "xUrl","xSeconds","youtubeUrl","youtubeSeconds",
+  "instagramUrl","instagramSeconds","facebookUrl","facebookSeconds",
+  "copyrightText","defaultSeconds"
+];
+
+async function loadData() {
+  const snap = await getDoc(CONFIG_DOC);
+  const data = snap.exists() ? snap.data() : {};
+
+  document.getElementById("brandName").value = data.brandName || "GrupKu";
+  document.getElementById("groupName").value = data.groupName || "";
+  document.getElementById("logoUrl").value = data.logoUrl || "";
+  document.getElementById("avatarUrl").value = data.avatarUrl || "";
+  updatePreview("logoPreview", data.logoUrl);
+  updatePreview("avatarPreview", data.avatarUrl);
+
+  const links = data.links || {};
+  setLink("join", links.join);
+  setLink("download", links.download);
+  setLink("x", links.x);
+  setLink("youtube", links.youtube);
+  setLink("instagram", links.instagram);
+  setLink("facebook", links.facebook);
+
+  document.getElementById("copyrightText").value = data.copyrightText || "";
+  document.getElementById("defaultSeconds").value = data.defaultSeconds ?? 5;
+
+  document.getElementById("loadingMsg").style.display = "none";
+  document.getElementById("mainContent").style.display = "block";
+  document.getElementById("saveBar").style.display = "flex";
+}
+
+function setLink(key, obj) {
+  document.getElementById(key + "Url").value = (obj && obj.url) || "";
+  document.getElementById(key + "Seconds").value = (obj && obj.seconds) ?? "";
+}
+
+function updatePreview(elId, url) {
+  const el = document.getElementById(elId);
+  el.innerHTML = url ? `<img src="${url}">` : "Belum ada";
+}
+
+async function uploadToImgbb(file, statusElId, previewElId, urlFieldId) {
+  const statusEl = document.getElementById(statusElId);
+  statusEl.textContent = "Mengunggah...";
+  try {
+    const base64 = await fileToBase64(file);
+    const form = new FormData();
+    form.append("image", base64);
+    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+      method: "POST",
+      body: form
+    });
+    const json = await res.json();
+    if (json.success) {
+      const url = json.data.url;
+      document.getElementById(urlFieldId).value = url;
+      updatePreview(previewElId, url);
+      statusEl.textContent = "Berhasil";
+    } else {
+      statusEl.textContent = "Gagal unggah";
+    }
+  } catch (err) {
+    statusEl.textContent = "Gagal unggah";
+  }
+  setTimeout(() => { statusEl.textContent = ""; }, 3000);
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+document.getElementById("logoFile").addEventListener("change", (e) => {
+  if (e.target.files[0]) uploadToImgbb(e.target.files[0], "logoStatus", "logoPreview", "logoUrl");
+});
+document.getElementById("avatarFile").addEventListener("change", (e) => {
+  if (e.target.files[0]) uploadToImgbb(e.target.files[0], "avatarStatus", "avatarPreview", "avatarUrl");
+});
+
+document.getElementById("saveBtn").addEventListener("click", async () => {
+  const btn = document.getElementById("saveBtn");
+  const msg = document.getElementById("saveMsg");
+  btn.disabled = true;
+  btn.textContent = "Menyimpan...";
+
+  const payload = {
+    brandName: document.getElementById("brandName").value.trim(),
+    groupName: document.getElementById("groupName").value.trim(),
+    logoUrl: document.getElementById("logoUrl").value.trim(),
+    avatarUrl: document.getElementById("avatarUrl").value.trim(),
+    copyrightText: document.getElementById("copyrightText").value.trim(),
+    defaultSeconds: Number(document.getElementById("defaultSeconds").value) || 5,
+    links: {
+      join: getLinkPayload("join"),
+      download: getLinkPayload("download"),
+      x: getLinkPayload("x"),
+      youtube: getLinkPayload("youtube"),
+      instagram: getLinkPayload("instagram"),
+      facebook: getLinkPayload("facebook")
+    }
+  };
+
+  try {
+    await setDoc(CONFIG_DOC, payload, { merge: true });
+    msg.textContent = "Tersimpan.";
+  } catch (err) {
+    msg.textContent = "Gagal menyimpan, coba lagi.";
+  }
+  btn.disabled = false;
+  btn.textContent = "Simpan Perubahan";
+  setTimeout(() => { msg.textContent = ""; }, 3000);
+});
+
+function getLinkPayload(key) {
+  const url = document.getElementById(key + "Url").value.trim();
+  const secondsRaw = document.getElementById(key + "Seconds").value;
+  const seconds = secondsRaw === "" ? null : Number(secondsRaw);
+  return { url, seconds };
+}
+</script>
+</body>
+</html>
