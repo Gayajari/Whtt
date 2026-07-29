@@ -139,7 +139,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const CONFIG_DOC = doc(db, "config", "utama");
+const UTAMA_DOC = doc(db, "config", "utama");
 
 const goBtn = document.getElementById("goBtn");
 const countNum = document.getElementById("countNum");
@@ -151,14 +151,24 @@ ringFg.style.strokeDasharray = CIRC;
 ringFg.style.strokeDashoffset = 0;
 
 const params = new URLSearchParams(window.location.search);
-const key = params.get("to"); // join | download | x | youtube | instagram | facebook
+const key = params.get("to");     // join | download | x | youtube | instagram | facebook
+const postId = params.get("id");  // opsional: id postingan tertentu
 
-const snap = await getDoc(CONFIG_DOC);
-const data = snap.exists() ? snap.data() : {};
-const defaultSeconds = data.defaultSeconds ?? 5;
-const dest = (key && data.links && data.links[key]) ? data.links[key] : null;
-const target = dest && dest.url ? dest.url : null;
-const REDIRECT_SECONDS = (dest && dest.seconds) ? dest.seconds : defaultSeconds;
+const utamaSnap = await getDoc(UTAMA_DOC);
+const utama = utamaSnap.exists() ? utamaSnap.data() : {};
+
+let post = {};
+if (postId) {
+  const postSnap = await getDoc(doc(db, "posts", postId));
+  post = postSnap.exists() ? postSnap.data() : {};
+}
+
+const utamaLink = (utama.links && utama.links[key]) || {};
+const postLink = (post.links && post.links[key]) || {};
+
+const defaultSeconds = post.defaultSeconds ?? utama.defaultSeconds ?? 5;
+const target = postLink.url || utamaLink.url || null;
+const REDIRECT_SECONDS = (postLink.seconds ?? utamaLink.seconds) || defaultSeconds;
 
 if (!target) {
   document.querySelector("h1").textContent = "Tautan tidak ditemukan";
