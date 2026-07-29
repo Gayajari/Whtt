@@ -105,6 +105,76 @@
     min-height:16px;
   }
   .loading{ text-align:center; padding:60px 20px; color:rgba(255,255,255,0.5); }
+
+  .tabs{
+    display:flex; gap:8px;
+    max-width:640px; margin:0 auto;
+    padding:16px 18px 0;
+  }
+  .tab-btn{
+    background:transparent;
+    border:1px solid var(--line);
+    color:rgba(255,255,255,0.65);
+    padding:9px 18px;
+    border-radius:20px;
+    font-size:13px;
+    cursor:pointer;
+  }
+  .tab-btn.active{
+    background:var(--green);
+    border-color:var(--green);
+    color:#fff;
+    font-weight:600;
+  }
+
+  .hint{
+    font-size:13px;
+    color:rgba(255,255,255,0.5);
+    margin-bottom:16px;
+    margin-top:-8px;
+  }
+  .default-hint{
+    font-weight:400;
+    color:rgba(255,255,255,0.4);
+    font-size:12px;
+  }
+
+  .secondary-btn{
+    background:transparent;
+    border:1px solid var(--line);
+    color:#fff;
+    padding:11px 16px;
+    border-radius:8px;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .secondary-btn:hover{ border-color:var(--green); }
+
+  .post-item{
+    display:flex; align-items:center; justify-content:space-between;
+    background:#0e1912;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px 14px;
+    margin-bottom:10px;
+  }
+  .post-item .post-info{ font-size:14px; }
+  .post-item .post-info small{ display:block; color:rgba(255,255,255,0.45); font-size:12px; margin-top:2px; }
+  .post-item .post-actions{ display:flex; gap:8px; }
+  .post-item .post-actions button{
+    background:transparent; border:1px solid var(--line); color:#fff;
+    padding:6px 12px; border-radius:6px; font-size:12px; cursor:pointer;
+  }
+  .post-item .post-actions button:hover{ border-color:var(--green); }
+  .post-item .post-actions button.danger:hover{ border-color:#ff6b6b; color:#ff6b6b; }
+  .post-empty{ color:rgba(255,255,255,0.4); font-size:13px; padding:10px 0; }
+
+  /* Dasbor lebih lega di layar besar */
+  @media (min-width: 900px){
+    main{ max-width:760px; }
+    .tabs{ max-width:760px; }
+    .save-bar > div{ max-width:760px; }
+  }
 </style>
 </head>
 <body>
@@ -114,10 +184,16 @@
   <button class="logout" id="logoutBtn">Keluar</button>
 </header>
 
+<div class="tabs" id="tabs" style="display:none;">
+  <button class="tab-btn active" data-tab="utama">Data Utama</button>
+  <button class="tab-btn" data-tab="posting">Postingan</button>
+</div>
+
 <div class="loading" id="loadingMsg">Memuat data...</div>
 
 <main id="mainContent" style="display:none;">
 
+<div id="tabUtama">
   <div class="group">
     <h2>Profil &amp; Brand</h2>
     <div class="field">
@@ -227,6 +303,97 @@
       <input type="number" id="defaultSeconds" min="0">
     </div>
   </div>
+</div>
+
+<div id="tabPosting" style="display:none;">
+  <div class="group">
+    <h2>Daftar Postingan</h2>
+    <p class="hint">Field yang dikosongkan otomatis memakai nilai dari Data Utama.</p>
+    <div id="postList"></div>
+    <button type="button" class="secondary-btn" id="newPostBtn">+ Tambah Postingan Baru</button>
+  </div>
+
+  <div class="group" id="postEditor" style="display:none;">
+    <h2 id="postEditorTitle">Postingan Baru</h2>
+    <div class="field">
+      <label>ID Postingan (untuk URL: index.html?id=...)</label>
+      <input type="text" id="post_id" placeholder="misal: promo-agustus">
+    </div>
+    <div class="field">
+      <label>Nama Grup <span class="default-hint" id="hint_groupName"></span></label>
+      <input type="text" id="post_groupName">
+    </div>
+    <div class="field">
+      <label>Foto Profil <span class="default-hint">(kosongkan = pakai Data Utama)</span></label>
+      <div class="img-upload">
+        <div class="preview" id="post_avatarPreview">Belum ada</div>
+        <label class="upload-btn">
+          Unggah gambar
+          <input type="file" accept="image/*" id="post_avatarFile">
+        </label>
+        <span class="upload-status" id="post_avatarStatus"></span>
+      </div>
+      <input type="url" id="post_avatarUrl" placeholder="Kosongkan = pakai foto Data Utama">
+    </div>
+    <div class="field">
+      <label>Nama Brand <span class="default-hint">(kosongkan = pakai Data Utama)</span></label>
+      <input type="text" id="post_brandName">
+    </div>
+    <div class="field">
+      <label>Logo <span class="default-hint">(kosongkan = pakai Data Utama)</span></label>
+      <input type="url" id="post_logoUrl">
+    </div>
+
+    <div class="link-block">
+      <div class="label-name">Bergabung ke Obrolan</div>
+      <div class="row2">
+        <div class="field"><label>Link tujuan</label><input type="url" id="post_joinUrl"></div>
+        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_joinSeconds" min="0"></div>
+      </div>
+    </div>
+    <div class="link-block">
+      <div class="label-name">Unduh</div>
+      <div class="row2">
+        <div class="field"><label>Link tujuan</label><input type="url" id="post_downloadUrl"></div>
+        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_downloadSeconds" min="0"></div>
+      </div>
+    </div>
+    <div class="link-block">
+      <div class="label-name">X (Twitter)</div>
+      <div class="row2">
+        <div class="field"><label>Link</label><input type="url" id="post_xUrl"></div>
+        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_xSeconds" min="0"></div>
+      </div>
+    </div>
+    <div class="link-block">
+      <div class="label-name">YouTube</div>
+      <div class="row2">
+        <div class="field"><label>Link</label><input type="url" id="post_youtubeUrl"></div>
+        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_youtubeSeconds" min="0"></div>
+      </div>
+    </div>
+    <div class="link-block">
+      <div class="label-name">Instagram</div>
+      <div class="row2">
+        <div class="field"><label>Link</label><input type="url" id="post_instagramUrl"></div>
+        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_instagramSeconds" min="0"></div>
+      </div>
+    </div>
+    <div class="link-block">
+      <div class="label-name">Facebook</div>
+      <div class="row2">
+        <div class="field"><label>Link</label><input type="url" id="post_facebookUrl"></div>
+        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_facebookSeconds" min="0"></div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:10px; margin-top:20px;">
+      <button type="button" class="secondary-btn" id="cancelPostBtn">Batal</button>
+      <button type="button" id="savePostBtn" style="flex:1;">Simpan Postingan</button>
+    </div>
+    <div class="save-msg" id="postSaveMsg"></div>
+  </div>
+</div>
 
 </main>
 
@@ -240,29 +407,30 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 /* =========================================================
    ISI DENGAN CONFIG FIREBASE PROJECT BARU ANDA (sama seperti di login.html)
    ========================================================= */
 const firebaseConfig = {
-  apiKey: "AIzaSyChOM4R3aRy9lVzHEHQOYylZPRZsOOlX-U",
-  authDomain: "whtt-30503.firebaseapp.com",
-  projectId: "whtt-30503",
-  storageBucket: "whtt-30503.firebasestorage.app",
-  messagingSenderId: "724998097956",
-  appId: "1:724998097956:web:55ede6854c37364c5b1cb1",
-  measurementId: "G-Q7ZGY6X4M4"
+  apiKey: "ISI_API_KEY",
+  authDomain: "ISI_PROJECT.firebaseapp.com",
+  projectId: "ISI_PROJECT",
+  storageBucket: "ISI_PROJECT.appspot.com",
+  messagingSenderId: "ISI_SENDER_ID",
+  appId: "ISI_APP_ID"
 };
 
 // API key imgbb (imgbb.com → dapatkan API key gratis)
-const IMGBB_API_KEY = "4c9f74a96b587d088f23e287426991e8";
+const IMGBB_API_KEY = "ISI_IMGBB_API_KEY";
 /* ========================================================= */
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const CONFIG_DOC = doc(db, "config", "utama");
+const POSTS_COL = collection(db, "posts");
+let latestUtamaData = {};
 
 onAuthStateChanged(auth, (user) => {
   if (!user) {
@@ -288,6 +456,7 @@ const fieldIds = [
 async function loadData() {
   const snap = await getDoc(CONFIG_DOC);
   const data = snap.exists() ? snap.data() : {};
+  latestUtamaData = data;
 
   document.getElementById("brandName").value = data.brandName || "GrupKu";
   document.getElementById("groupName").value = data.groupName || "";
@@ -310,6 +479,9 @@ async function loadData() {
   document.getElementById("loadingMsg").style.display = "none";
   document.getElementById("mainContent").style.display = "block";
   document.getElementById("saveBar").style.display = "flex";
+  document.getElementById("tabs").style.display = "flex";
+
+  renderPostList();
 }
 
 function setLink(key, obj) {
@@ -404,6 +576,133 @@ function getLinkPayload(key) {
   const seconds = secondsRaw === "" ? null : Number(secondsRaw);
   return { url, seconds };
 }
+
+/* ================= TAB SWITCHING ================= */
+document.querySelectorAll(".tab-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    const tab = btn.dataset.tab;
+    document.getElementById("tabUtama").style.display = tab === "utama" ? "block" : "none";
+    document.getElementById("tabPosting").style.display = tab === "posting" ? "block" : "none";
+    document.getElementById("saveBar").style.display = tab === "utama" ? "flex" : "none";
+    if (tab === "posting") closePostEditor();
+  });
+});
+
+/* ================= DAFTAR POSTINGAN ================= */
+async function renderPostList() {
+  const listEl = document.getElementById("postList");
+  listEl.innerHTML = "Memuat...";
+  const snap = await getDocs(POSTS_COL);
+  if (snap.empty) {
+    listEl.innerHTML = '<div class="post-empty">Belum ada postingan.</div>';
+    return;
+  }
+  listEl.innerHTML = "";
+  snap.forEach((docSnap) => {
+    const d = docSnap.data();
+    const item = document.createElement("div");
+    item.className = "post-item";
+    item.innerHTML = `
+      <div class="post-info">
+        ${docSnap.id}
+        <small>${d.groupName ? d.groupName : "(pakai Nama Grup Data Utama)"}</small>
+      </div>
+      <div class="post-actions">
+        <button data-act="edit">Edit</button>
+        <button data-act="delete" class="danger">Hapus</button>
+      </div>
+    `;
+    item.querySelector('[data-act="edit"]').addEventListener("click", () => openPostEditor(docSnap.id, d));
+    item.querySelector('[data-act="delete"]').addEventListener("click", () => deletePost(docSnap.id));
+    listEl.appendChild(item);
+  });
+}
+
+async function deletePost(id) {
+  if (!confirm(`Hapus postingan "${id}"? Tindakan ini tidak bisa dibatalkan.`)) return;
+  await deleteDoc(doc(db, "posts", id));
+  renderPostList();
+}
+
+const postFieldKeys = ["groupName","avatarUrl","brandName","logoUrl"];
+const postLinkKeys = ["join","download","x","youtube","instagram","facebook"];
+let editingPostId = null;
+
+document.getElementById("newPostBtn").addEventListener("click", () => openPostEditor(null, {}));
+document.getElementById("cancelPostBtn").addEventListener("click", closePostEditor);
+
+function openPostEditor(id, data) {
+  editingPostId = id;
+  document.getElementById("postEditorTitle").textContent = id ? `Edit: ${id}` : "Postingan Baru";
+  const idField = document.getElementById("post_id");
+  idField.value = id || "";
+  idField.disabled = !!id;
+
+  postFieldKeys.forEach((k) => {
+    document.getElementById("post_" + k).value = data[k] || "";
+  });
+  updatePreview("post_avatarPreview", data.avatarUrl);
+
+  const links = data.links || {};
+  postLinkKeys.forEach((k) => {
+    document.getElementById("post_" + k + "Url").value = (links[k] && links[k].url) || "";
+    document.getElementById("post_" + k + "Seconds").value = (links[k] && links[k].seconds) ?? "";
+  });
+
+  document.getElementById("hint_groupName").textContent =
+    latestUtamaData.groupName ? `(kosongkan = "${latestUtamaData.groupName}")` : "";
+
+  document.getElementById("postEditor").style.display = "block";
+  document.getElementById("postEditor").scrollIntoView({ behavior: "smooth" });
+}
+
+function closePostEditor() {
+  document.getElementById("postEditor").style.display = "none";
+  editingPostId = null;
+}
+
+document.getElementById("post_avatarFile").addEventListener("change", (e) => {
+  if (e.target.files[0]) uploadToImgbb(e.target.files[0], "post_avatarStatus", "post_avatarPreview", "post_avatarUrl");
+});
+
+document.getElementById("savePostBtn").addEventListener("click", async () => {
+  const idField = document.getElementById("post_id");
+  const id = (editingPostId || idField.value.trim());
+  const msg = document.getElementById("postSaveMsg");
+
+  if (!id) {
+    msg.textContent = "ID postingan wajib diisi.";
+    return;
+  }
+
+  const btn = document.getElementById("savePostBtn");
+  btn.disabled = true;
+  btn.textContent = "Menyimpan...";
+
+  const payload = {};
+  postFieldKeys.forEach((k) => {
+    payload[k] = document.getElementById("post_" + k).value.trim();
+  });
+  payload.links = {};
+  postLinkKeys.forEach((k) => {
+    const url = document.getElementById("post_" + k + "Url").value.trim();
+    const secondsRaw = document.getElementById("post_" + k + "Seconds").value;
+    payload.links[k] = { url, seconds: secondsRaw === "" ? null : Number(secondsRaw) };
+  });
+
+  try {
+    await setDoc(doc(db, "posts", id), payload);
+    msg.textContent = "Tersimpan.";
+    await renderPostList();
+    setTimeout(() => { closePostEditor(); msg.textContent = ""; }, 800);
+  } catch (err) {
+    msg.textContent = "Gagal menyimpan, coba lagi.";
+  }
+  btn.disabled = false;
+  btn.textContent = "Simpan Postingan";
+});
 </script>
 </body>
 </html>
