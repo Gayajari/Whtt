@@ -364,19 +364,22 @@ function render(utama, post) {
   } else {
     logoBottom.style.display = "none";
   }
-  // Ukuran logo & jarak logo-brand: hanya diterapkan jika sudah diatur di dashboard.
-  // Jika belum ada pengaturan baru, elemen tetap memakai ukuran/jarak bawaan dari CSS (desain lama).
+  // Ukuran & jarak logo Header dan logo Footer Dark diatur SECARA TERPISAH, masing-masing
+  // hanya membaca pengaturannya sendiri. Hanya diterapkan jika sudah diatur di dashboard;
+  // jika belum ada pengaturan baru, elemen tetap memakai ukuran/jarak bawaan dari CSS (desain lama).
   if (data.logoTopSize) {
     logoTop.style.width = data.logoTopSize + "px";
     logoTop.style.height = data.logoTopSize + "px";
+  }
+  if (data.logoTopGap !== undefined && data.logoTopGap !== null && data.logoTopGap !== "") {
+    document.getElementById("brandLink").style.gap = data.logoTopGap + "px";
   }
   if (data.logoBottomSize) {
     logoBottom.style.width = data.logoBottomSize + "px";
     logoBottom.style.height = data.logoBottomSize + "px";
   }
-  if (data.logoGap !== undefined && data.logoGap !== null && data.logoGap !== "") {
-    document.getElementById("brandLink").style.gap = data.logoGap + "px";
-    document.getElementById("brandBottomLink").style.gap = data.logoGap + "px";
+  if (data.logoBottomGap !== undefined && data.logoBottomGap !== null && data.logoBottomGap !== "") {
+    document.getElementById("brandBottomLink").style.gap = data.logoBottomGap + "px";
   }
   if (data.avatarUrl) {
     document.getElementById("avatarImg").src = data.avatarUrl; // foto profil: langsung, tidak lewat redirect
@@ -407,8 +410,9 @@ function mergeWithUtama(utama, post) {
     logoTopUrl: post.logoTopUrl || utama.logoTopUrl,
     logoBottomUrl: post.logoBottomUrl || utama.logoBottomUrl,
     logoTopSize: post.logoTopSize || utama.logoTopSize,
+    logoTopGap: post.logoTopGap || utama.logoTopGap,
     logoBottomSize: post.logoBottomSize || utama.logoBottomSize,
-    logoGap: post.logoGap || utama.logoGap,
+    logoBottomGap: post.logoBottomGap || utama.logoBottomGap,
     avatarUrl: post.avatarUrl || utama.avatarUrl,
     copyrightText: post.copyrightText || utama.copyrightText
   };
