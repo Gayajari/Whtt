@@ -269,10 +269,17 @@
       </div>
     </div>
     <div class="link-block">
-      <div class="label-name">Logo &amp; Nama Brand (klik)</div>
+      <div class="label-name">Logo &amp; Nama Brand (klik) — atas</div>
       <div class="row2">
         <div class="field"><label>Link tujuan</label><input type="url" id="brandUrl"></div>
         <div class="field"><label>Jeda (detik)</label><input type="number" id="brandSeconds" min="0"></div>
+      </div>
+    </div>
+    <div class="link-block">
+      <div class="label-name">Logo &amp; Nama Brand (klik) — bawah/footer</div>
+      <div class="row2">
+        <div class="field"><label>Link tujuan</label><input type="url" id="brandBottomUrl"></div>
+        <div class="field"><label>Jeda (detik)</label><input type="number" id="brandBottomSeconds" min="0"></div>
       </div>
     </div>
     <div class="link-block">
@@ -410,10 +417,17 @@
       </div>
     </div>
     <div class="link-block">
-      <div class="label-name">Logo &amp; Nama Brand (klik)</div>
+      <div class="label-name">Logo &amp; Nama Brand (klik) — atas</div>
       <div class="row2">
         <div class="field"><label>Link tujuan</label><input type="url" id="post_brandUrl"></div>
         <div class="field"><label>Jeda (detik)</label><input type="number" id="post_brandSeconds" min="0"></div>
+      </div>
+    </div>
+    <div class="link-block">
+      <div class="label-name">Logo &amp; Nama Brand (klik) — bawah/footer</div>
+      <div class="row2">
+        <div class="field"><label>Link tujuan</label><input type="url" id="post_brandBottomUrl"></div>
+        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_brandBottomSeconds" min="0"></div>
       </div>
     </div>
     <div class="link-block">
@@ -505,6 +519,7 @@ const firebaseConfig = {
   appId: "1:724998097956:web:55ede6854c37364c5b1cb1",
   measurementId: "G-Q7ZGY6X4M4"
 };
+
 // API key imgbb (imgbb.com → dapatkan API key gratis)
 const IMGBB_API_KEY = "4c9f74a96b587d088f23e287426991e8";
 /* ========================================================= */
@@ -553,6 +568,7 @@ async function loadData() {
   const links = data.links || {};
   setLink("headerDownload", links.headerDownload);
   setLink("brand", links.brand);
+  setLink("brandBottom", links.brandBottom);
   setLink("menu", links.menu);
   setLink("join", links.join);
   setLink("download", links.download);
@@ -661,6 +677,7 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
     links: {
       headerDownload: getLinkPayload("headerDownload"),
       brand: getLinkPayload("brand"),
+      brandBottom: getLinkPayload("brandBottom"),
       menu: getLinkPayload("menu"),
       join: getLinkPayload("join"),
       download: getLinkPayload("download"),
@@ -739,7 +756,7 @@ async function deletePost(id) {
 }
 
 const postFieldKeys = ["groupName","inviteText","avatarUrl","brandName","logoUrl"];
-const postLinkKeys = ["headerDownload","brand","menu","join","download","x","youtube","instagram","facebook"];
+const postLinkKeys = ["headerDownload","brand","brandBottom","menu","join","download","x","youtube","instagram","facebook"];
 let editingPostId = null;
 
 document.getElementById("newPostBtn").addEventListener("click", () => openPostEditor(null, {}));
