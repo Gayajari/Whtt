@@ -334,24 +334,6 @@ const firebaseConfig = {
 };
 /* ========================================================= */
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-/* =========================================================
-   ISI DENGAN CONFIG FIREBASE PROJECT BARU ANDA (sama seperti di login.html/admin.html)
-   ========================================================= */
-const firebaseConfig = {
-  apiKey: "AIzaSyChOM4R3aRy9lVzHEHQOYylZPRZsOOlX-U",
-  authDomain: "whtt-30503.firebaseapp.com",
-  projectId: "whtt-30503",
-  storageBucket: "whtt-30503.firebasestorage.app",
-  messagingSenderId: "724998097956",
-  appId: "1:724998097956:web:55ede6854c37364c5b1cb1",
-  measurementId: "G-Q7ZGY6X4M4"
-};
-/* ========================================================= */
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const UTAMA_DOC = doc(db, "config", "utama");
