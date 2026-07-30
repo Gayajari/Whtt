@@ -417,8 +417,8 @@
   <div class="group" id="postEditor" style="display:none;">
     <h2 id="postEditorTitle">Postingan Baru</h2>
     <div class="field">
-      <label>ID Postingan (untuk URL: index.html?id=...)</label>
-      <input type="text" id="post_id" placeholder="misal: promo-agustus">
+      <label>ID Postingan (untuk URL: index.html?id=...) <span class="default-hint">(dibuat otomatis)</span></label>
+      <input type="text" id="post_id" placeholder="Membuat ID...">
     </div>
     <div class="field">
       <label>Nama Grup <span class="default-hint" id="hint_groupName"></span></label>
@@ -860,6 +860,28 @@ const postFieldKeys = ["groupName","inviteText","avatarUrl","brandName","logoTop
 const postLinkKeys = ["headerDownload","brand","brandBottom","menu","join","download","x","youtube","instagram","facebook"];
 let editingPostId = null;
 
+// ===== ID Postingan Otomatis =====
+// Menghasilkan ID pendek (10 karakter, huruf kecil+angka) lalu memastikan belum
+// dipakai di koleksi "posts" sebelum dipakai. Tidak mengubah struktur database.
+function generateShortId(length = 10) {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let id = "";
+  for (let i = 0; i < length; i++) {
+    id += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return id;
+}
+
+async function generateUniquePostId() {
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const candidate = generateShortId(10);
+    const snap = await getDoc(doc(db, "posts", candidate));
+    if (!snap.exists()) return candidate;
+  }
+  // Pengaman jika 10 percobaan tetap bentrok (sangat jarang terjadi)
+  return generateShortId(8) + Date.now().toString(36).slice(-4);
+}
+
 document.getElementById("newPostBtn").addEventListener("click", () => openPostEditor(null, {}));
 document.getElementById("cancelPostBtn").addEventListener("click", closePostEditor);
 
@@ -869,8 +891,17 @@ function openPostEditor(id, data) {
   document.getElementById("postSaveMsg").textContent = "";
   document.getElementById("postEditorTitle").textContent = id ? `Edit: ${id}` : "Postingan Baru";
   const idField = document.getElementById("post_id");
-  idField.value = id || "";
-  idField.disabled = !!id;
+  if (id) {
+    idField.value = id;
+    idField.disabled = true;
+  } else {
+    idField.value = "";
+    idField.disabled = true;
+    generateUniquePostId().then((newId) => {
+      idField.value = newId;
+      idField.disabled = false;
+    });
+  }
 
   postFieldKeys.forEach((k) => {
     document.getElementById("post_" + k).value = data[k] || "";
@@ -912,6 +943,11 @@ document.getElementById("savePostBtn").addEventListener("click", async () => {
   const idField = document.getElementById("post_id");
   const id = (editingPostId || idField.value.trim());
   const msg = document.getElementById("postSaveMsg");
+
+  if (!editingPostId && idField.disabled) {
+    msg.textContent = "ID sedang dibuat, tunggu sebentar...";
+    return;
+  }
 
   if (!id) {
     msg.textContent = "ID postingan wajib diisi.";
