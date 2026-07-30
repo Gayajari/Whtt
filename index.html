@@ -185,6 +185,7 @@
     display:flex; align-items:center; gap:10px;
     color:#fff; font-weight:700; font-size:19px;
     margin-bottom:28px;
+    text-decoration:none;
   }
   .foot-brand img{
     width:24px; height:24px;
@@ -286,10 +287,10 @@
   </section>
 
   <footer>
-    <div class="foot-brand">
+    <a class="foot-brand" id="brandBottomLink" href="#">
       <img id="logoBottom" src="" alt="logo">
       <span id="brandNameBottom">GrupKu</span>
-    </div>
+    </a>
     <div class="foot-cols">
       <div>
         <h4>Yang kami lakukan</h4>
@@ -366,6 +367,7 @@ function render(utama, post) {
   const q = postId ? `&id=${encodeURIComponent(postId)}` : "";
   document.getElementById("headerDownloadLink").href = `redirect.html?to=headerDownload${q}`;
   document.getElementById("brandLink").href = `redirect.html?to=brand${q}`;
+  document.getElementById("brandBottomLink").href = `redirect.html?to=brandBottom${q}`;
   document.getElementById("menuLink").href = `redirect.html?to=menu${q}`;
   document.getElementById("joinBtn").href = `redirect.html?to=join${q}`;
   document.getElementById("downloadLinkTop").href = `redirect.html?to=download${q}`;
