@@ -987,7 +987,7 @@ document.getElementById("savePostBtn").addEventListener("click", async () => {
 });
 
 function getPostShareLink(id) {
-  return `${window.location.origin}${window.location.pathname.replace(/admin\.html$/, "")}index.html?id=${encodeURIComponent(id)}`;
+  return `${window.location.origin}${window.location.pathname.replace(/admin\.html$/, "")}?id=${encodeURIComponent(id)}`;
 }
 
 function showPostShareLink(id) {
