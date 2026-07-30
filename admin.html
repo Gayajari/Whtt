@@ -3,572 +3,326 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dasbor Admin</title>
+<title>Gabung Grup</title>
 <style>
-  :root{ --green:#25D366; --green-dark:#1DA851; --dark:#0e1912; --card:#132018; --line:rgba(255,255,255,0.1); }
+  :root{
+    --green:#25D366;
+    --green-dark:#1DA851;
+    --ink:#0b1a12;
+    --dark:#0e1912;
+    --dark-2:#132018;
+    --line:#e7ede9;
+    --muted:#6b7a71;
+  }
   *{box-sizing:border-box; margin:0; padding:0;}
   body{
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    background:var(--dark);
-    color:#fff;
-    min-height:100vh;
+    background:#fff;
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
   }
-  header{
-    display:flex; align-items:center; justify-content:space-between;
-    padding:18px 24px;
-    border-bottom:1px solid var(--line);
-    position:sticky; top:0; background:var(--dark); z-index:10;
-  }
-  header h1{ font-size:17px; font-weight:600; }
-  .logout{
-    background:transparent; border:1px solid var(--line); color:#fff;
-    padding:8px 16px; border-radius:8px; font-size:13px; cursor:pointer;
-  }
-  .logout:hover{ border-color:var(--green); }
-
-  main{ max-width:640px; margin:0 auto; padding:24px 18px 100px; }
-
-  .group{
-    background:var(--card);
-    border-radius:14px;
-    padding:20px;
-    margin-bottom:20px;
-  }
-  .group h2{
-    font-size:14px;
-    color:var(--green);
-    text-transform:uppercase;
-    letter-spacing:0.05em;
-    margin-bottom:16px;
-  }
-  .field{ margin-bottom:16px; }
-  .field:last-child{ margin-bottom:0; }
-  .field label{
-    display:block; font-size:13px; color:rgba(255,255,255,0.65); margin-bottom:6px;
-  }
-  .field input[type="text"], .field input[type="url"], .field input[type="number"]{
+  .phone{
     width:100%;
-    background:#0e1912;
-    border:1px solid var(--line);
-    color:#fff;
-    padding:11px 13px;
-    border-radius:8px;
-    font-size:14px;
-    outline:none;
+    max-width:480px;
+    min-height:100vh;
+    background:#fff;
+    display:flex;
+    flex-direction:column;
   }
-  .field input:focus{ border-color:var(--green); }
-  .row2{ display:grid; grid-template-columns:1fr 110px; gap:10px; }
 
-  .link-block{
-    border-top:1px solid var(--line);
-    padding-top:16px; margin-top:16px;
+  /* ===== Tablet & Desktop: kartu di tengah, tidak melebar penuh ===== */
+  @media (min-width: 700px){
+    body{
+      background:#f2f4f3;
+      padding:40px 20px;
+    }
+    .phone{
+      min-height:auto;
+      max-width:420px;
+      border-radius:20px;
+      overflow:hidden;
+      box-shadow:0 12px 40px rgba(0,0,0,0.12);
+    }
   }
-  .link-block:first-of-type{ border-top:none; padding-top:0; margin-top:0; }
-  .link-block .label-name{ font-size:14px; font-weight:600; margin-bottom:12px; }
+  @media (min-width: 1024px){
+    .phone{ max-width:440px; }
+    .avatar{ width:170px; height:170px; }
+    .invite-text{ font-size:27px; }
+  }
 
-  .img-upload{
-    display:flex; align-items:center; gap:14px; margin-bottom:12px;
+  /* ===== Header ===== */
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 20px;
+    border-bottom:1px solid var(--line);
   }
-  .img-upload .preview{
-    position:relative;
-    width:64px; height:64px; border-radius:10px;
-    background:#0e1912; border:1px solid var(--line);
-    overflow:visible; flex-shrink:0;
-    display:flex; align-items:center; justify-content:center;
-    font-size:10px; color:rgba(255,255,255,0.4);
-  }
-  .img-upload .preview img{ width:100%; height:100%; object-fit:cover; border-radius:10px; }
-  .img-upload .preview .clear-btn{
-    position:absolute; top:-7px; right:-7px;
-    width:20px; height:20px; border-radius:50%;
-    background:#ff5555; color:#fff; border:none;
-    font-size:12px; line-height:20px; text-align:center;
-    cursor:pointer; display:none; padding:0;
-  }
-  .img-upload .preview.has-image .clear-btn{ display:block; }
-  .img-upload .upload-btn{
-    background:#0e1912; border:1px solid var(--line); color:#fff;
-    padding:9px 14px; border-radius:8px; font-size:13px; cursor:pointer;
-  }
-  .img-upload .upload-btn:hover{ border-color:var(--green); }
-  .img-upload input[type="file"]{ display:none; }
-  .upload-status{ font-size:12px; color:rgba(255,255,255,0.5); margin-left:8px; }
-
-  .share-box{
-    display:none;
-    align-items:center; justify-content:space-between; gap:10px;
-    background:#0e1912; border:1px solid var(--line); border-radius:8px;
-    padding:10px 12px; margin-top:14px; font-size:13px;
-  }
-  .share-box input{
-    flex:1; background:transparent; border:none; color:#fff;
-    font-size:12px; outline:none;
-  }
-  .share-box button{
-    background:transparent; border:1px solid var(--line); color:var(--green);
-    padding:7px 14px; border-radius:6px; font-size:12px; cursor:pointer; white-space:nowrap;
-  }
-  .share-box button:hover{ border-color:var(--green); }
-
-  .save-bar{
-    position:fixed; bottom:0; left:0; right:0;
-    background:var(--card);
-    border-top:1px solid var(--line);
-    padding:14px 18px;
-    display:flex; justify-content:center;
-  }
-  .save-bar button{
-    width:100%; max-width:600px;
-    background:var(--green); color:#fff; border:none;
-    padding:14px 0; border-radius:10px;
-    font-size:15px; font-weight:600; cursor:pointer;
-  }
-  .save-bar button:hover{ background:var(--green-dark); }
-  .save-bar button:disabled{ opacity:0.6; cursor:default; }
-  .save-msg{
-    text-align:center; font-size:13px; margin-top:8px; color:var(--green);
-    min-height:16px;
-  }
-  .loading{ text-align:center; padding:60px 20px; color:rgba(255,255,255,0.5); }
-
-  .tabs{
-    display:flex; gap:8px;
-    max-width:640px; margin:0 auto;
-    padding:16px 18px 0;
-  }
-  .tab-btn{
-    background:transparent;
-    border:1px solid var(--line);
-    color:rgba(255,255,255,0.65);
-    padding:9px 18px;
-    border-radius:20px;
-    font-size:13px;
-    cursor:pointer;
-  }
-  .tab-btn.active{
+  .dl-icon{
+    width:38px; height:38px;
+    border-radius:50%;
     background:var(--green);
-    border-color:var(--green);
-    color:#fff;
-    font-weight:600;
+    display:flex; align-items:center; justify-content:center;
+    text-decoration:none;
   }
+  .dl-icon svg{width:18px;height:18px;fill:#fff;}
+  .brand{
+    display:flex; align-items:center; gap:8px;
+    font-weight:700; font-size:20px;
+    color:var(--green-dark);
+    text-decoration:none;
+  }
+  .brand img{
+    width:26px; height:26px;
+    display:block;
+    object-fit:contain;
+    flex-shrink:0;
+  }
+  .menu-icon{display:flex; flex-direction:column; gap:5px; cursor:pointer; text-decoration:none;}
+  .menu-icon span{width:22px; height:2px; background:var(--ink); display:block;}
 
-  .hint{
-    font-size:13px;
-    color:rgba(255,255,255,0.5);
-    margin-bottom:16px;
-    margin-top:-8px;
+  /* ===== Hero / undangan ===== */
+  main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    padding:44px 28px 30px;
   }
-  .default-hint{
+  .avatar{
+    width:150px; height:150px;
+    border-radius:50%;
+    overflow:hidden;
+    background:#eee;
+    margin-bottom:28px;
+    box-shadow:0 6px 24px rgba(0,0,0,0.08);
+  }
+  .avatar img{width:100%; height:100%; object-fit:cover; display:block;}
+  .invite-text{
+    font-size:26px;
+    line-height:1.35;
+    color:var(--ink);
     font-weight:400;
-    color:rgba(255,255,255,0.4);
-    font-size:12px;
   }
-
-  .secondary-btn{
-    background:transparent;
-    border:1px solid var(--line);
+  .invite-text b{font-weight:700;}
+  .join-btn{
+    margin-top:36px;
+    display:inline-block;
+    background:var(--green);
     color:#fff;
-    padding:11px 16px;
-    border-radius:8px;
+    font-size:18px;
+    font-weight:600;
+    text-decoration:none;
+    padding:16px 40px;
+    border-radius:32px;
+    transition:background .15s ease, transform .1s ease;
+  }
+  .join-btn:active{transform:scale(0.98);}
+  .join-btn:hover{background:var(--green-dark);}
+
+  .divider-text{
+    margin-top:48px;
+    color:var(--muted);
+    font-size:15px;
+  }
+  .divider-text a{
+    display:block;
+    margin-top:10px;
+    color:var(--green-dark);
+    font-weight:700;
+    font-size:17px;
+    text-decoration:underline;
+  }
+
+  /* ===== Dark bottom bar with dl + socials ===== */
+  .bottom-bar{
+    background:var(--dark);
+    padding:34px 24px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .dl-btn{
+    width:100%;
+    max-width:340px;
+    background:var(--green);
+    color:#fff;
+    text-decoration:none;
+    text-align:center;
+    padding:16px 0;
+    border-radius:32px;
+    font-size:18px;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+  }
+  .dl-btn svg{width:18px;height:18px;fill:#fff;}
+  .socials{
+    display:flex;
+    gap:16px;
+    margin-top:28px;
+  }
+  .socials a{
+    width:48px; height:48px;
+    border-radius:50%;
+    border:1.5px solid rgba(255,255,255,0.25);
+    display:flex; align-items:center; justify-content:center;
+    color:#fff;
+    text-decoration:none;
+  }
+  .socials svg{width:20px; height:20px; fill:#fff;}
+
+  /* ===== Footer lanjutan ===== */
+  footer{
+    background:var(--dark-2);
+    padding:36px 24px 30px;
+  }
+  .foot-brand{
+    display:flex; align-items:center; gap:10px;
+    color:#fff; font-weight:700; font-size:19px;
+    margin-bottom:28px;
+    text-decoration:none;
+  }
+  .foot-brand img{
+    width:24px; height:24px;
+    object-fit:contain;
+    flex-shrink:0;
+    display:block;
+  }
+  .foot-cols{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:24px;
+    margin-bottom:28px;
+  }
+  .foot-cols h4{
+    color:var(--muted);
+    font-weight:400;
     font-size:14px;
-    cursor:pointer;
+    margin-bottom:14px;
   }
-  .secondary-btn:hover{ border-color:var(--green); }
-
-  .post-item{
-    display:flex; align-items:center; justify-content:space-between;
-    background:#0e1912;
-    border:1px solid var(--line);
-    border-radius:10px;
-    padding:12px 14px;
-    margin-bottom:10px;
+  .foot-cols a{
+    display:block;
+    color:#e7ede9;
+    text-decoration:none;
+    font-size:15px;
+    margin-bottom:14px;
   }
-  .post-item .post-info{ font-size:14px; }
-  .post-item .post-info small{ display:block; color:rgba(255,255,255,0.45); font-size:12px; margin-top:2px; }
-  .post-item .post-actions{ display:flex; gap:8px; }
-  .post-item .post-actions button{
-    background:transparent; border:1px solid var(--line); color:#fff;
-    padding:6px 12px; border-radius:6px; font-size:12px; cursor:pointer;
+  .foot-legal{
+    border-top:1px solid rgba(255,255,255,0.08);
+    padding-top:22px;
+    color:var(--muted);
+    font-size:13px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
   }
-  .post-item .post-actions button:hover{ border-color:var(--green); }
-  .post-item .post-actions button.danger:hover{ border-color:#ff6b6b; color:#ff6b6b; }
-  .post-empty{ color:rgba(255,255,255,0.4); font-size:13px; padding:10px 0; }
-
-  /* Dasbor lebih lega di layar besar */
-  @media (min-width: 900px){
-    main{ max-width:760px; }
-    .tabs{ max-width:760px; }
-    .save-bar > div{ max-width:760px; }
+  .foot-legal a{color:var(--muted); text-decoration:none;}
+  .lang-pill{
+    margin-top:16px;
+    align-self:flex-start;
+    border:1px solid rgba(255,255,255,0.25);
+    color:#fff;
+    padding:10px 18px;
+    border-radius:24px;
+    font-size:14px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    width:fit-content;
   }
 </style>
 </head>
 <body>
+<div class="phone">
 
-<header>
-  <h1>Dasbor Grup</h1>
-  <button class="logout" id="logoutBtn">Keluar</button>
-</header>
+  <header>
+    <a class="dl-icon" id="headerDownloadLink" href="#">
+      <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h4V4h4v6h4l-6 6zm-7 2h14v2H5v-2z"/></svg>
+    </a>
+    <a class="brand" id="brandLink" href="#">
+      <img id="logoTop" src="" alt="logo">
+      <span id="brandName">GrupKu</span>
+    </a>
+    <a class="menu-icon" id="menuLink" href="#"><span></span><span></span><span></span></a>
+  </header>
 
-<div class="tabs" id="tabs" style="display:none;">
-  <button class="tab-btn active" data-tab="utama">Data Utama</button>
-  <button class="tab-btn" data-tab="posting">Postingan</button>
-</div>
+  <main>
+    <div class="avatar"><img id="avatarImg" src="" alt="foto profil"></div>
+    <div class="invite-text">
+      <span id="inviteLabel">Anda diundang untuk bergabung</span><br>
+      "<b id="groupName">Nama Grup</b>"
+    </div>
+    <a class="join-btn" id="joinBtn" href="#">Bergabung ke obrolan</a>
 
-<div class="loading" id="loadingMsg">Memuat data...</div>
+    <div class="divider-text">
+      Belum punya aplikasinya?
+      <a id="downloadLinkTop" href="#">Unduh Sekarang</a>
+    </div>
+  </main>
 
-<main id="mainContent" style="display:none;">
+  <section class="bottom-bar">
+    <a class="dl-btn" id="downloadBtn" href="#">
+      Unduh
+      <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h4V4h4v6h4l-6 6zm-7 2h14v2H5v-2z"/></svg>
+    </a>
+    <div class="socials">
+      <a id="soc-x" href="#" aria-label="X">
+        <svg viewBox="0 0 24 24"><path d="M18.9 2H22l-7.4 8.4L23.3 22h-6.9l-5.4-6.6L4.8 22H1.6l7.9-9L1 2h7.1l4.9 6.1L18.9 2zm-1.2 18h1.9L7.4 3.9H5.4L17.7 20z"/></svg>
+      </a>
+      <a id="soc-yt" href="#" aria-label="YouTube">
+        <svg viewBox="0 0 24 24"><path d="M23 12s0-3.6-.5-5.2c-.3-1-1-1.8-2-2C18.9 4.3 12 4.3 12 4.3s-6.9 0-8.5.5c-1 .2-1.7 1-2 2C1 8.4 1 12 1 12s0 3.6.5 5.2c.3 1 1 1.7 2 2 1.6.5 8.5.5 8.5.5s6.9 0 8.5-.5c1-.3 1.7-1 2-2 .5-1.6.5-5.2.5-5.2zM9.8 15.5v-7l6 3.5-6 3.5z"/></svg>
+      </a>
+      <a id="soc-ig" href="#" aria-label="Instagram">
+        <svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 2 .3 2.4.5.6.2 1 .5 1.5 1 .4.4.7.9 1 1.5.2.4.4 1.2.5 2.4.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 2-.5 2.4-.2.6-.5 1-1 1.5-.4.4-.9.7-1.5 1-.4.2-1.2.4-2.4.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-2-.3-2.4-.5-.6-.2-1-.5-1.5-1-.4-.4-.7-.9-1-1.5-.2-.4-.4-1.2-.5-2.4C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-2 .5-2.4.2-.6.5-1 1-1.5.4-.4.9-.7 1.5-1 .4-.2 1.2-.4 2.4-.5C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.1 0-3.5 0-4.7.1-1 .1-1.6.2-1.9.4-.5.2-.8.4-1.2.7-.3.3-.5.7-.7 1.2-.1.3-.3.9-.4 1.9-.1 1.2-.1 1.5-.1 4.7s0 3.5.1 4.7c.1 1 .3 1.6.4 1.9.2.5.4.8.7 1.2.3.3.7.5 1.2.7.3.1.9.3 1.9.4 1.2.1 1.5.1 4.7.1s3.5 0 4.7-.1c1-.1 1.6-.3 1.9-.4.5-.2.8-.4 1.2-.7.3-.3.5-.7.7-1.2.1-.3.3-.9.4-1.9.1-1.2.1-1.5.1-4.7s0-3.5-.1-4.7c-.1-1-.3-1.6-.4-1.9-.2-.5-.4-.8-.7-1.2-.3-.3-.7-.5-1.2-.7-.3-.1-.9-.3-1.9-.4-1.2-.1-1.5-.1-4.7-.1zm0 3.5a4.5 4.5 0 110 9 4.5 4.5 0 010-9zm0 1.8a2.7 2.7 0 100 5.4 2.7 2.7 0 000-5.4zm5.7-2a1.1 1.1 0 110 2.1 1.1 1.1 0 010-2.1z"/></svg>
+      </a>
+      <a id="soc-fb" href="#" aria-label="Facebook">
+        <svg viewBox="0 0 24 24"><path d="M22 12a10 10 0 10-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0022 12z"/></svg>
+      </a>
+    </div>
+  </section>
 
-<div id="tabUtama">
-  <div class="group">
-    <h2>Profil &amp; Brand</h2>
-    <div class="field">
-      <label>Nama Brand (header &amp; footer)</label>
-      <input type="text" id="brandName">
-    </div>
-    <div class="field">
-      <label>Nama Grup (judul undangan)</label>
-      <input type="text" id="groupName">
-    </div>
-    <div class="field">
-      <label>Teks Ajakan (sebelum nama grup)</label>
-      <input type="text" id="inviteText" placeholder="Anda diundang untuk bergabung">
-    </div>
-    <div class="field">
-      <label>Logo Header (bagian atas)</label>
-      <div class="img-upload">
-        <div class="preview" id="logoTopPreview">Belum ada<button type="button" class="clear-btn" data-clear="logoTop">×</button></div>
-        <label class="upload-btn">
-          Unggah gambar
-          <input type="file" accept="image/*" id="logoTopFile">
-        </label>
-        <span class="upload-status" id="logoTopStatus"></span>
+  <footer>
+    <a class="foot-brand" id="brandBottomLink" href="#">
+      <img id="logoBottom" src="" alt="logo">
+      <span id="brandNameBottom">GrupKu</span>
+    </a>
+    <div class="foot-cols">
+      <div>
+        <h4>Yang kami lakukan</h4>
+        <a href="#">Fitur</a>
+        <a href="#">Blog</a>
+        <a href="#">Keamanan</a>
+        <a href="#">Untuk Bisnis</a>
       </div>
-      <input type="url" id="logoTopUrl" placeholder="URL logo header (terisi otomatis setelah unggah)">
-    </div>
-    <div class="field">
-      <label>Logo Footer Dark (bagian bawah)</label>
-      <div class="img-upload">
-        <div class="preview" id="logoBottomPreview">Belum ada<button type="button" class="clear-btn" data-clear="logoBottom">×</button></div>
-        <label class="upload-btn">
-          Unggah gambar
-          <input type="file" accept="image/*" id="logoBottomFile">
-        </label>
-        <span class="upload-status" id="logoBottomStatus"></span>
-      </div>
-      <input type="url" id="logoBottomUrl" placeholder="URL logo footer dark (terisi otomatis setelah unggah)">
-    </div>
-    <div class="field">
-      <label>Ukuran Logo Header (px)</label>
-      <div style="display:flex; align-items:center; gap:12px;">
-        <input type="range" id="logoTopSize" min="16" max="60" value="26" style="flex:1;">
-        <span class="default-hint" id="logoTopSizeVal">26px</span>
+      <div>
+        <h4>Siapa kami</h4>
+        <a href="#">Tentang kami</a>
+        <a href="#">Karier</a>
+        <a href="#">Pusat Merek</a>
+        <a href="#">Privasi</a>
       </div>
     </div>
-    <div class="field">
-      <label>Jarak Logo Header dengan Tulisan Brand (px)</label>
-      <div style="display:flex; align-items:center; gap:12px;">
-        <input type="range" id="logoTopGap" min="0" max="30" value="8" style="flex:1;">
-        <span class="default-hint" id="logoTopGapVal">8px</span>
-      </div>
+    <div class="foot-legal">
+      <a href="#">Peta situs</a>
+      <a href="#">Ketentuan &amp; Kebijakan Privasi</a>
+      <span id="copyrightLine">2026 © GrupKu</span>
+      <div class="lang-pill">Bahasa Indonesia ▾</div>
     </div>
-    <div class="field">
-      <label>Ukuran Logo Footer Dark (px)</label>
-      <div style="display:flex; align-items:center; gap:12px;">
-        <input type="range" id="logoBottomSize" min="16" max="60" value="24" style="flex:1;">
-        <span class="default-hint" id="logoBottomSizeVal">24px</span>
-      </div>
-    </div>
-    <div class="field">
-      <label>Jarak Logo Footer Dark dengan Tulisan Brand (px)</label>
-      <div style="display:flex; align-items:center; gap:12px;">
-        <input type="range" id="logoBottomGap" min="0" max="30" value="10" style="flex:1;">
-        <span class="default-hint" id="logoBottomGapVal">10px</span>
-      </div>
-    </div>
-    <div class="field">
-      <label>Foto Profil</label>
-      <div class="img-upload">
-        <div class="preview" id="avatarPreview">Belum ada<button type="button" class="clear-btn" data-clear="avatar">×</button></div>
-        <label class="upload-btn">
-          Unggah gambar
-          <input type="file" accept="image/*" id="avatarFile">
-        </label>
-        <span class="upload-status" id="avatarStatus"></span>
-      </div>
-      <input type="url" id="avatarUrl" placeholder="URL foto profil (terisi otomatis setelah unggah)">
-    </div>
-  </div>
+  </footer>
 
-  <div class="group">
-    <h2>Header (bagian paling atas halaman)</h2>
-    <div class="link-block">
-      <div class="label-name">Ikon Unduh (pojok kiri atas)</div>
-      <div class="row2">
-        <div class="field"><label>Link tujuan</label><input type="url" id="headerDownloadUrl"></div>
-        <div class="field"><label>Jeda (detik)</label><input type="number" id="headerDownloadSeconds" min="0"></div>
-      </div>
-    </div>
-    <div class="link-block">
-      <div class="label-name">Logo &amp; Nama Brand (klik) — atas</div>
-      <div class="row2">
-        <div class="field"><label>Link tujuan</label><input type="url" id="brandUrl"></div>
-        <div class="field"><label>Jeda (detik)</label><input type="number" id="brandSeconds" min="0"></div>
-      </div>
-    </div>
-    <div class="link-block">
-      <div class="label-name">Logo &amp; Nama Brand (klik) — bawah/footer</div>
-      <div class="row2">
-        <div class="field"><label>Link tujuan</label><input type="url" id="brandBottomUrl"></div>
-        <div class="field"><label>Jeda (detik)</label><input type="number" id="brandBottomSeconds" min="0"></div>
-      </div>
-    </div>
-    <div class="link-block">
-      <div class="label-name">Menu (garis 3, pojok kanan atas)</div>
-      <div class="row2">
-        <div class="field"><label>Link tujuan</label><input type="url" id="menuUrl"></div>
-        <div class="field"><label>Jeda (detik)</label><input type="number" id="menuSeconds" min="0"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="group">
-    <h2>Tombol Utama</h2>
-    <div class="link-block">
-      <div class="label-name">Bergabung ke Obrolan</div>
-      <div class="row2">
-        <div class="field">
-          <label>Link tujuan</label>
-          <input type="url" id="joinUrl">
-        </div>
-        <div class="field">
-          <label>Jeda (detik)</label>
-          <input type="number" id="joinSeconds" min="0">
-        </div>
-      </div>
-    </div>
-    <div class="link-block">
-      <div class="label-name">Unduh</div>
-      <div class="row2">
-        <div class="field">
-          <label>Link tujuan</label>
-          <input type="url" id="downloadUrl">
-        </div>
-        <div class="field">
-          <label>Jeda (detik)</label>
-          <input type="number" id="downloadSeconds" min="0">
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="group">
-    <h2>Sosial Media</h2>
-    <div class="link-block">
-      <div class="label-name">X (Twitter)</div>
-      <div class="row2">
-        <div class="field"><label>Link</label><input type="url" id="xUrl"></div>
-        <div class="field"><label>Jeda (detik)</label><input type="number" id="xSeconds" min="0"></div>
-      </div>
-    </div>
-    <div class="link-block">
-      <div class="label-name">YouTube</div>
-      <div class="row2">
-        <div class="field"><label>Link</label><input type="url" id="youtubeUrl"></div>
-        <div class="field"><label>Jeda (detik)</label><input type="number" id="youtubeSeconds" min="0"></div>
-      </div>
-    </div>
-    <div class="link-block">
-      <div class="label-name">Instagram</div>
-      <div class="row2">
-        <div class="field"><label>Link</label><input type="url" id="instagramUrl"></div>
-        <div class="field"><label>Jeda (detik)</label><input type="number" id="instagramSeconds" min="0"></div>
-      </div>
-    </div>
-    <div class="link-block">
-      <div class="label-name">Facebook</div>
-      <div class="row2">
-        <div class="field"><label>Link</label><input type="url" id="facebookUrl"></div>
-        <div class="field"><label>Jeda (detik)</label><input type="number" id="facebookSeconds" min="0"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="group">
-    <h2>Lainnya</h2>
-    <div class="field">
-      <label>Teks Copyright</label>
-      <input type="text" id="copyrightText">
-    </div>
-    <div class="field">
-      <label>Jeda default (detik) — dipakai kalau salah satu link di atas jedanya kosong</label>
-      <input type="number" id="defaultSeconds" min="0">
-    </div>
-  </div>
-</div>
-
-<div id="tabPosting" style="display:none;">
-  <div class="group">
-    <h2>Daftar Postingan</h2>
-    <p class="hint">Field yang dikosongkan otomatis memakai nilai dari Data Utama.</p>
-    <div id="postList"></div>
-    <button type="button" class="secondary-btn" id="newPostBtn">+ Tambah Postingan Baru</button>
-  </div>
-
-  <div class="group" id="postEditor" style="display:none;">
-    <h2 id="postEditorTitle">Postingan Baru</h2>
-    <div class="field">
-      <label>ID Postingan (untuk URL: index.html?id=...)</label>
-      <input type="text" id="post_id" placeholder="misal: promo-agustus">
-    </div>
-    <div class="field">
-      <label>Nama Grup <span class="default-hint" id="hint_groupName"></span></label>
-      <input type="text" id="post_groupName">
-    </div>
-    <div class="field">
-      <label>Teks Ajakan <span class="default-hint">(kosongkan = pakai Data Utama)</span></label>
-      <input type="text" id="post_inviteText">
-    </div>
-    <div class="field">
-      <label>Foto Profil <span class="default-hint">(kosongkan = pakai Data Utama)</span></label>
-      <div class="img-upload">
-        <div class="preview" id="post_avatarPreview">Belum ada<button type="button" class="clear-btn" data-clear="post_avatar">×</button></div>
-        <label class="upload-btn">
-          Unggah gambar
-          <input type="file" accept="image/*" id="post_avatarFile">
-        </label>
-        <span class="upload-status" id="post_avatarStatus"></span>
-      </div>
-      <input type="url" id="post_avatarUrl" placeholder="Kosongkan = pakai foto Data Utama">
-    </div>
-    <div class="field">
-      <label>Nama Brand <span class="default-hint">(kosongkan = pakai Data Utama)</span></label>
-      <input type="text" id="post_brandName">
-    </div>
-    <div class="field">
-      <label>Logo Header <span class="default-hint">(kosongkan = pakai Data Utama)</span></label>
-      <div class="img-upload">
-        <div class="preview" id="post_logoTopPreview">Belum ada<button type="button" class="clear-btn" data-clear="post_logoTop">×</button></div>
-        <label class="upload-btn">
-          Unggah gambar
-          <input type="file" accept="image/*" id="post_logoTopFile">
-        </label>
-        <span class="upload-status" id="post_logoTopStatus"></span>
-      </div>
-      <input type="url" id="post_logoTopUrl" placeholder="Kosongkan = pakai logo header Data Utama">
-    </div>
-    <div class="field">
-      <label>Logo Footer Dark <span class="default-hint">(kosongkan = pakai Data Utama)</span></label>
-      <div class="img-upload">
-        <div class="preview" id="post_logoBottomPreview">Belum ada<button type="button" class="clear-btn" data-clear="post_logoBottom">×</button></div>
-        <label class="upload-btn">
-          Unggah gambar
-          <input type="file" accept="image/*" id="post_logoBottomFile">
-        </label>
-        <span class="upload-status" id="post_logoBottomStatus"></span>
-      </div>
-      <input type="url" id="post_logoBottomUrl" placeholder="Kosongkan = pakai logo footer Data Utama">
-    </div>
-
-    <div class="link-block">
-      <div class="label-name">Ikon Unduh (pojok kiri atas)</div>
-      <div class="row2">
-        <div class="field"><label>Link tujuan</label><input type="url" id="post_headerDownloadUrl"></div>
-        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_headerDownloadSeconds" min="0"></div>
-      </div>
-    </div>
-    <div class="link-block">
-      <div class="label-name">Logo &amp; Nama Brand (klik) — atas</div>
-      <div class="row2">
-        <div class="field"><label>Link tujuan</label><input type="url" id="post_brandUrl"></div>
-        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_brandSeconds" min="0"></div>
-      </div>
-    </div>
-    <div class="link-block">
-      <div class="label-name">Logo &amp; Nama Brand (klik) — bawah/footer</div>
-      <div class="row2">
-        <div class="field"><label>Link tujuan</label><input type="url" id="post_brandBottomUrl"></div>
-        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_brandBottomSeconds" min="0"></div>
-      </div>
-    </div>
-    <div class="link-block">
-      <div class="label-name">Menu (garis 3)</div>
-      <div class="row2">
-        <div class="field"><label>Link tujuan</label><input type="url" id="post_menuUrl"></div>
-        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_menuSeconds" min="0"></div>
-      </div>
-    </div>
-
-    <div class="link-block">
-      <div class="label-name">Bergabung ke Obrolan</div>
-      <div class="row2">
-        <div class="field"><label>Link tujuan</label><input type="url" id="post_joinUrl"></div>
-        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_joinSeconds" min="0"></div>
-      </div>
-    </div>
-    <div class="link-block">
-      <div class="label-name">Unduh</div>
-      <div class="row2">
-        <div class="field"><label>Link tujuan</label><input type="url" id="post_downloadUrl"></div>
-        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_downloadSeconds" min="0"></div>
-      </div>
-    </div>
-    <div class="link-block">
-      <div class="label-name">X (Twitter)</div>
-      <div class="row2">
-        <div class="field"><label>Link</label><input type="url" id="post_xUrl"></div>
-        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_xSeconds" min="0"></div>
-      </div>
-    </div>
-    <div class="link-block">
-      <div class="label-name">YouTube</div>
-      <div class="row2">
-        <div class="field"><label>Link</label><input type="url" id="post_youtubeUrl"></div>
-        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_youtubeSeconds" min="0"></div>
-      </div>
-    </div>
-    <div class="link-block">
-      <div class="label-name">Instagram</div>
-      <div class="row2">
-        <div class="field"><label>Link</label><input type="url" id="post_instagramUrl"></div>
-        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_instagramSeconds" min="0"></div>
-      </div>
-    </div>
-    <div class="link-block">
-      <div class="label-name">Facebook</div>
-      <div class="row2">
-        <div class="field"><label>Link</label><input type="url" id="post_facebookUrl"></div>
-        <div class="field"><label>Jeda (detik)</label><input type="number" id="post_facebookSeconds" min="0"></div>
-      </div>
-    </div>
-
-    <div style="display:flex; gap:10px; margin-top:20px;">
-      <button type="button" class="secondary-btn" id="cancelPostBtn">Batal</button>
-      <button type="button" id="savePostBtn" style="flex:1;">Simpan Postingan</button>
-    </div>
-    <div class="save-msg" id="postSaveMsg"></div>
-    <div class="share-box" id="postShareBox">
-      <input type="text" id="postShareLink" readonly>
-      <button type="button" id="postShareBtn">Bagikan</button>
-    </div>
-  </div>
-</div>
-
-</main>
-
-<div class="save-bar" id="saveBar" style="display:none;">
-  <div style="width:100%; max-width:600px; margin:0 auto;">
-    <button id="saveBtn">Simpan Perubahan</button>
-    <div class="save-msg" id="saveMsg"></div>
-  </div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 /* =========================================================
-   ISI DENGAN CONFIG FIREBASE PROJECT BARU ANDA (sama seperti di login.html)
+   ISI DENGAN CONFIG FIREBASE PROJECT BARU ANDA (sama seperti di login.html/admin.html)
    ========================================================= */
 const firebaseConfig = {
   apiKey: "AIzaSyChOM4R3aRy9lVzHEHQOYylZPRZsOOlX-U",
@@ -579,391 +333,113 @@ const firebaseConfig = {
   appId: "1:724998097956:web:55ede6854c37364c5b1cb1",
   measurementId: "G-Q7ZGY6X4M4"
 };
-
-// API key imgbb (imgbb.com → dapatkan API key gratis)
-const IMGBB_API_KEY = "4c9f74a96b587d088f23e287426991e8";
 /* ========================================================= */
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
-const CONFIG_DOC = doc(db, "config", "utama");
-const POSTS_COL = collection(db, "posts");
-let latestUtamaData = {};
+const UTAMA_DOC = doc(db, "config", "utama");
 
-onAuthStateChanged(auth, (user) => {
-  if (!user) {
-    window.location.href = "login.html";
+// Buka index.html?id=NAMA_POSTINGAN untuk memakai postingan tertentu.
+// Field yang dikosongkan di postingan otomatis memakai nilai Data Utama.
+const postId = new URLSearchParams(window.location.search).get("id");
+
+function render(utama, post) {
+  const data = mergeWithUtama(utama || {}, post || {});
+
+  document.getElementById("brandName").textContent = data.brandName || "GrupKu";
+  document.getElementById("brandNameBottom").textContent = data.brandName || "GrupKu";
+  const logoTop = document.getElementById("logoTop");
+  const logoBottom = document.getElementById("logoBottom");
+  // Logo header & footer independen. Jika salah satu kosong, pakai yang lain sebagai fallback
+  // agar gambar tidak rusak/kosong.
+  const logoTopSrc = data.logoTopUrl || data.logoBottomUrl || "";
+  const logoBottomSrc = data.logoBottomUrl || data.logoTopUrl || "";
+  if (logoTopSrc) {
+    logoTop.src = logoTopSrc; logoTop.style.display = "block";
   } else {
-    loadData();
+    logoTop.style.display = "none";
   }
-});
-
-document.getElementById("logoutBtn").addEventListener("click", async () => {
-  await signOut(auth);
-  window.location.href = "login.html";
-});
-
-const fieldIds = [
-  "brandName","groupName","logoTopUrl","logoTopSize","logoTopGap","logoBottomUrl","logoBottomSize","logoBottomGap","avatarUrl",
-  "joinUrl","joinSeconds","downloadUrl","downloadSeconds",
-  "xUrl","xSeconds","youtubeUrl","youtubeSeconds",
-  "instagramUrl","instagramSeconds","facebookUrl","facebookSeconds",
-  "copyrightText","defaultSeconds"
-];
-
-async function loadData() {
-  const snap = await getDoc(CONFIG_DOC);
-  const data = snap.exists() ? snap.data() : {};
-  latestUtamaData = data;
-
-  document.getElementById("brandName").value = data.brandName || "GrupKu";
-  document.getElementById("groupName").value = data.groupName || "";
-  document.getElementById("inviteText").value = data.inviteText || "";
-  document.getElementById("logoTopUrl").value = data.logoTopUrl || "";
-  document.getElementById("logoBottomUrl").value = data.logoBottomUrl || "";
-  document.getElementById("avatarUrl").value = data.avatarUrl || "";
-  updatePreview("logoTopPreview", data.logoTopUrl);
-  updatePreview("logoBottomPreview", data.logoBottomUrl);
-  updatePreview("avatarPreview", data.avatarUrl);
-
-  const logoTopSizeVal = data.logoTopSize ?? 26;
-  const logoTopGapVal = data.logoTopGap ?? 8;
-  const logoBottomSizeVal = data.logoBottomSize ?? 24;
-  const logoBottomGapVal = data.logoBottomGap ?? 10;
-  document.getElementById("logoTopSize").value = logoTopSizeVal;
-  document.getElementById("logoTopGap").value = logoTopGapVal;
-  document.getElementById("logoBottomSize").value = logoBottomSizeVal;
-  document.getElementById("logoBottomGap").value = logoBottomGapVal;
-  document.getElementById("logoTopSizeVal").textContent = logoTopSizeVal + "px";
-  document.getElementById("logoTopGapVal").textContent = logoTopGapVal + "px";
-  document.getElementById("logoBottomSizeVal").textContent = logoBottomSizeVal + "px";
-  document.getElementById("logoBottomGapVal").textContent = logoBottomGapVal + "px";
-
-  const links = data.links || {};
-  setLink("headerDownload", links.headerDownload);
-  setLink("brand", links.brand);
-  setLink("brandBottom", links.brandBottom);
-  setLink("menu", links.menu);
-  setLink("join", links.join);
-  setLink("download", links.download);
-  setLink("x", links.x);
-  setLink("youtube", links.youtube);
-  setLink("instagram", links.instagram);
-  setLink("facebook", links.facebook);
-
-  document.getElementById("copyrightText").value = data.copyrightText || "";
-  document.getElementById("defaultSeconds").value = data.defaultSeconds ?? 5;
-
-  document.getElementById("loadingMsg").style.display = "none";
-  document.getElementById("mainContent").style.display = "block";
-  document.getElementById("saveBar").style.display = "flex";
-  document.getElementById("tabs").style.display = "flex";
-
-  renderPostList();
-}
-
-function setLink(key, obj) {
-  document.getElementById(key + "Url").value = (obj && obj.url) || "";
-  document.getElementById(key + "Seconds").value = (obj && obj.seconds) ?? "";
-}
-
-function updatePreview(elId, url) {
-  const el = document.getElementById(elId);
-  const clearBtn = el.querySelector(".clear-btn");
-  if (url) {
-    el.innerHTML = `<img src="${url}">`;
-    if (clearBtn) el.appendChild(clearBtn);
-    el.classList.add("has-image");
+  if (logoBottomSrc) {
+    logoBottom.src = logoBottomSrc; logoBottom.style.display = "block";
   } else {
-    el.innerHTML = "Belum ada";
-    if (clearBtn) el.appendChild(clearBtn);
-    el.classList.remove("has-image");
+    logoBottom.style.display = "none";
   }
-}
-
-document.querySelectorAll(".clear-btn").forEach((btn) => {
-  btn.addEventListener("click", (e) => {
-    e.preventDefault();
-    const key = btn.dataset.clear; // "logoTop" | "logoBottom" | "avatar" | "post_avatar" | "post_logoTop" | "post_logoBottom"
-    const urlFieldId = key === "post_avatar" ? "post_avatarUrl" : key + "Url";
-    const previewId = key === "post_avatar" ? "post_avatarPreview" : key + "Preview";
-    document.getElementById(urlFieldId).value = "";
-    updatePreview(previewId, "");
-  });
-});
-
-async function uploadToImgbb(file, statusElId, previewElId, urlFieldId) {
-  const statusEl = document.getElementById(statusElId);
-  statusEl.textContent = "Mengunggah...";
-  try {
-    const base64 = await fileToBase64(file);
-    const form = new FormData();
-    form.append("image", base64);
-    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-      method: "POST",
-      body: form
-    });
-    const json = await res.json();
-    if (json.success) {
-      const url = json.data.url;
-      document.getElementById(urlFieldId).value = url;
-      updatePreview(previewElId, url);
-      statusEl.textContent = "Berhasil";
-    } else {
-      statusEl.textContent = "Gagal unggah";
-    }
-  } catch (err) {
-    statusEl.textContent = "Gagal unggah";
+  // Ukuran & jarak logo Header dan logo Footer Dark diatur SECARA TERPISAH, masing-masing
+  // hanya membaca pengaturannya sendiri. Hanya diterapkan jika sudah diatur di dashboard;
+  // jika belum ada pengaturan baru, elemen tetap memakai ukuran/jarak bawaan dari CSS (desain lama).
+  if (data.logoTopSize) {
+    logoTop.style.width = data.logoTopSize + "px";
+    logoTop.style.height = data.logoTopSize + "px";
   }
-  setTimeout(() => { statusEl.textContent = ""; }, 3000);
+  if (data.logoTopGap !== undefined && data.logoTopGap !== null && data.logoTopGap !== "") {
+    document.getElementById("brandLink").style.gap = data.logoTopGap + "px";
+  }
+  if (data.logoBottomSize) {
+    logoBottom.style.width = data.logoBottomSize + "px";
+    logoBottom.style.height = data.logoBottomSize + "px";
+  }
+  if (data.logoBottomGap !== undefined && data.logoBottomGap !== null && data.logoBottomGap !== "") {
+    document.getElementById("brandBottomLink").style.gap = data.logoBottomGap + "px";
+  }
+  if (data.avatarUrl) {
+    document.getElementById("avatarImg").src = data.avatarUrl; // foto profil: langsung, tidak lewat redirect
+  }
+  document.getElementById("groupName").textContent = data.groupName || "";
+  document.getElementById("inviteLabel").textContent = data.inviteText || "Anda diundang untuk bergabung";
+  document.getElementById("copyrightLine").textContent = data.copyrightText || "";
+
+  const q = postId ? `&id=${encodeURIComponent(postId)}` : "";
+  document.getElementById("headerDownloadLink").href = `redirect.html?to=headerDownload${q}`;
+  document.getElementById("brandLink").href = `redirect.html?to=brand${q}`;
+  document.getElementById("brandBottomLink").href = `redirect.html?to=brandBottom${q}`;
+  document.getElementById("menuLink").href = `redirect.html?to=menu${q}`;
+  document.getElementById("joinBtn").href = `redirect.html?to=join${q}`;
+  document.getElementById("downloadLinkTop").href = `redirect.html?to=download${q}`;
+  document.getElementById("downloadBtn").href = `redirect.html?to=download${q}`;
+  document.getElementById("soc-x").href = `redirect.html?to=x${q}`;
+  document.getElementById("soc-yt").href = `redirect.html?to=youtube${q}`;
+  document.getElementById("soc-ig").href = `redirect.html?to=instagram${q}`;
+  document.getElementById("soc-fb").href = `redirect.html?to=facebook${q}`;
 }
 
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result.split(",")[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+function pick(postVal, utamaVal) {
+  return (postVal === undefined || postVal === null || postVal === "") ? utamaVal : postVal;
 }
 
-document.getElementById("logoTopFile").addEventListener("change", (e) => {
-  if (e.target.files[0]) uploadToImgbb(e.target.files[0], "logoTopStatus", "logoTopPreview", "logoTopUrl");
-});
-document.getElementById("logoBottomFile").addEventListener("change", (e) => {
-  if (e.target.files[0]) uploadToImgbb(e.target.files[0], "logoBottomStatus", "logoBottomPreview", "logoBottomUrl");
-});
-document.getElementById("avatarFile").addEventListener("change", (e) => {
-  if (e.target.files[0]) uploadToImgbb(e.target.files[0], "avatarStatus", "avatarPreview", "avatarUrl");
-});
-
-document.getElementById("logoTopSize").addEventListener("input", (e) => {
-  document.getElementById("logoTopSizeVal").textContent = e.target.value + "px";
-});
-document.getElementById("logoTopGap").addEventListener("input", (e) => {
-  document.getElementById("logoTopGapVal").textContent = e.target.value + "px";
-});
-document.getElementById("logoBottomSize").addEventListener("input", (e) => {
-  document.getElementById("logoBottomSizeVal").textContent = e.target.value + "px";
-});
-document.getElementById("logoBottomGap").addEventListener("input", (e) => {
-  document.getElementById("logoBottomGapVal").textContent = e.target.value + "px";
-});
-
-document.getElementById("saveBtn").addEventListener("click", async () => {
-  const btn = document.getElementById("saveBtn");
-  const msg = document.getElementById("saveMsg");
-  btn.disabled = true;
-  btn.textContent = "Menyimpan...";
-
-  const payload = {
-    brandName: document.getElementById("brandName").value.trim(),
-    groupName: document.getElementById("groupName").value.trim(),
-    inviteText: document.getElementById("inviteText").value.trim(),
-    logoTopUrl: document.getElementById("logoTopUrl").value.trim(),
-    logoBottomUrl: document.getElementById("logoBottomUrl").value.trim(),
-    logoTopSize: Number(document.getElementById("logoTopSize").value) || 26,
-    logoTopGap: Number(document.getElementById("logoTopGap").value) || 8,
-    logoBottomSize: Number(document.getElementById("logoBottomSize").value) || 24,
-    logoBottomGap: Number(document.getElementById("logoBottomGap").value) || 10,
-    avatarUrl: document.getElementById("avatarUrl").value.trim(),
-    copyrightText: document.getElementById("copyrightText").value.trim(),
-    defaultSeconds: Number(document.getElementById("defaultSeconds").value) || 5,
-    links: {
-      headerDownload: getLinkPayload("headerDownload"),
-      brand: getLinkPayload("brand"),
-      brandBottom: getLinkPayload("brandBottom"),
-      menu: getLinkPayload("menu"),
-      join: getLinkPayload("join"),
-      download: getLinkPayload("download"),
-      x: getLinkPayload("x"),
-      youtube: getLinkPayload("youtube"),
-      instagram: getLinkPayload("instagram"),
-      facebook: getLinkPayload("facebook")
-    }
+function mergeWithUtama(utama, post) {
+  return {
+    brandName: post.brandName || utama.brandName,
+    groupName: post.groupName || utama.groupName,
+    inviteText: post.inviteText || utama.inviteText,
+    logoTopUrl: post.logoTopUrl || utama.logoTopUrl,
+    logoBottomUrl: post.logoBottomUrl || utama.logoBottomUrl,
+    logoTopSize: post.logoTopSize || utama.logoTopSize,
+    logoTopGap: pick(post.logoTopGap, utama.logoTopGap),
+    logoBottomSize: post.logoBottomSize || utama.logoBottomSize,
+    logoBottomGap: pick(post.logoBottomGap, utama.logoBottomGap),
+    avatarUrl: post.avatarUrl || utama.avatarUrl,
+    copyrightText: post.copyrightText || utama.copyrightText
   };
-
-  try {
-    await setDoc(CONFIG_DOC, payload, { merge: true });
-    msg.textContent = "Tersimpan.";
-  } catch (err) {
-    msg.textContent = "Gagal menyimpan, coba lagi.";
-  }
-  btn.disabled = false;
-  btn.textContent = "Simpan Perubahan";
-  setTimeout(() => { msg.textContent = ""; }, 3000);
-});
-
-function getLinkPayload(key) {
-  const url = document.getElementById(key + "Url").value.trim();
-  const secondsRaw = document.getElementById(key + "Seconds").value;
-  const seconds = secondsRaw === "" ? null : Number(secondsRaw);
-  return { url, seconds };
 }
 
-/* ================= TAB SWITCHING ================= */
-document.querySelectorAll(".tab-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-    const tab = btn.dataset.tab;
-    document.getElementById("tabUtama").style.display = tab === "utama" ? "block" : "none";
-    document.getElementById("tabPosting").style.display = tab === "posting" ? "block" : "none";
-    document.getElementById("saveBar").style.display = tab === "utama" ? "flex" : "none";
-    if (tab === "posting") closePostEditor();
+if (postId) {
+  // Pantau Data Utama & Postingan secara bersamaan, gabungkan tiap ada perubahan.
+  let latestUtama = {};
+  let latestPost = {};
+  onSnapshot(UTAMA_DOC, (snap) => {
+    latestUtama = snap.exists() ? snap.data() : {};
+    render(latestUtama, latestPost);
   });
-});
-
-/* ================= DAFTAR POSTINGAN ================= */
-async function renderPostList() {
-  const listEl = document.getElementById("postList");
-  listEl.innerHTML = "Memuat...";
-  const snap = await getDocs(POSTS_COL);
-  if (snap.empty) {
-    listEl.innerHTML = '<div class="post-empty">Belum ada postingan.</div>';
-    return;
-  }
-  listEl.innerHTML = "";
-  snap.forEach((docSnap) => {
-    const d = docSnap.data();
-    const item = document.createElement("div");
-    item.className = "post-item";
-    item.innerHTML = `
-      <div class="post-info">
-        ${docSnap.id}
-        <small>${d.groupName ? d.groupName : "(pakai Nama Grup Data Utama)"}</small>
-      </div>
-      <div class="post-actions">
-        <button data-act="edit">Edit</button>
-        <button data-act="delete" class="danger">Hapus</button>
-      </div>
-    `;
-    item.querySelector('[data-act="edit"]').addEventListener("click", () => openPostEditor(docSnap.id, d));
-    item.querySelector('[data-act="delete"]').addEventListener("click", () => deletePost(docSnap.id));
-    listEl.appendChild(item);
+  onSnapshot(doc(db, "posts", postId), (snap) => {
+    latestPost = snap.exists() ? snap.data() : {};
+    render(latestUtama, latestPost);
+  });
+} else {
+  // Tanpa ?id= : tampilkan Data Utama langsung (perilaku default/lama).
+  onSnapshot(UTAMA_DOC, (snap) => {
+    render(snap.exists() ? snap.data() : {}, {});
   });
 }
-
-async function deletePost(id) {
-  if (!confirm(`Hapus postingan "${id}"? Tindakan ini tidak bisa dibatalkan.`)) return;
-  await deleteDoc(doc(db, "posts", id));
-  renderPostList();
-}
-
-const postFieldKeys = ["groupName","inviteText","avatarUrl","brandName","logoTopUrl","logoBottomUrl"];
-const postLinkKeys = ["headerDownload","brand","brandBottom","menu","join","download","x","youtube","instagram","facebook"];
-let editingPostId = null;
-
-document.getElementById("newPostBtn").addEventListener("click", () => openPostEditor(null, {}));
-document.getElementById("cancelPostBtn").addEventListener("click", closePostEditor);
-
-function openPostEditor(id, data) {
-  editingPostId = id;
-  document.getElementById("postShareBox").style.display = "none";
-  document.getElementById("postSaveMsg").textContent = "";
-  document.getElementById("postEditorTitle").textContent = id ? `Edit: ${id}` : "Postingan Baru";
-  const idField = document.getElementById("post_id");
-  idField.value = id || "";
-  idField.disabled = !!id;
-
-  postFieldKeys.forEach((k) => {
-    document.getElementById("post_" + k).value = data[k] || "";
-  });
-  updatePreview("post_avatarPreview", data.avatarUrl);
-  updatePreview("post_logoTopPreview", data.logoTopUrl);
-  updatePreview("post_logoBottomPreview", data.logoBottomUrl);
-
-  const links = data.links || {};
-  postLinkKeys.forEach((k) => {
-    document.getElementById("post_" + k + "Url").value = (links[k] && links[k].url) || "";
-    document.getElementById("post_" + k + "Seconds").value = (links[k] && links[k].seconds) ?? "";
-  });
-
-  document.getElementById("hint_groupName").textContent =
-    latestUtamaData.groupName ? `(kosongkan = "${latestUtamaData.groupName}")` : "";
-
-  document.getElementById("postEditor").style.display = "block";
-  document.getElementById("postEditor").scrollIntoView({ behavior: "smooth" });
-}
-
-function closePostEditor() {
-  document.getElementById("postEditor").style.display = "none";
-  document.getElementById("postShareBox").style.display = "none";
-  editingPostId = null;
-}
-
-document.getElementById("post_avatarFile").addEventListener("change", (e) => {
-  if (e.target.files[0]) uploadToImgbb(e.target.files[0], "post_avatarStatus", "post_avatarPreview", "post_avatarUrl");
-});
-document.getElementById("post_logoTopFile").addEventListener("change", (e) => {
-  if (e.target.files[0]) uploadToImgbb(e.target.files[0], "post_logoTopStatus", "post_logoTopPreview", "post_logoTopUrl");
-});
-document.getElementById("post_logoBottomFile").addEventListener("change", (e) => {
-  if (e.target.files[0]) uploadToImgbb(e.target.files[0], "post_logoBottomStatus", "post_logoBottomPreview", "post_logoBottomUrl");
-});
-
-document.getElementById("savePostBtn").addEventListener("click", async () => {
-  const idField = document.getElementById("post_id");
-  const id = (editingPostId || idField.value.trim());
-  const msg = document.getElementById("postSaveMsg");
-
-  if (!id) {
-    msg.textContent = "ID postingan wajib diisi.";
-    return;
-  }
-
-  const btn = document.getElementById("savePostBtn");
-  btn.disabled = true;
-  btn.textContent = "Menyimpan...";
-
-  const payload = {};
-  postFieldKeys.forEach((k) => {
-    payload[k] = document.getElementById("post_" + k).value.trim();
-  });
-  payload.links = {};
-  postLinkKeys.forEach((k) => {
-    const url = document.getElementById("post_" + k + "Url").value.trim();
-    const secondsRaw = document.getElementById("post_" + k + "Seconds").value;
-    payload.links[k] = { url, seconds: secondsRaw === "" ? null : Number(secondsRaw) };
-  });
-
-  try {
-    await setDoc(doc(db, "posts", id), payload);
-    msg.textContent = "Tersimpan.";
-    editingPostId = id;
-    idField.value = id;
-    idField.disabled = true;
-    await renderPostList();
-    showPostShareLink(id);
-  } catch (err) {
-    msg.textContent = "Gagal menyimpan, coba lagi.";
-  }
-  btn.disabled = false;
-  btn.textContent = "Simpan Postingan";
-});
-
-function showPostShareLink(id) {
-  const link = `${window.location.origin}${window.location.pathname.replace(/admin\.html$/, "")}index.html?id=${encodeURIComponent(id)}`;
-  const box = document.getElementById("postShareBox");
-  const input = document.getElementById("postShareLink");
-  input.value = link;
-  box.style.display = "flex";
-}
-
-document.getElementById("postShareBtn").addEventListener("click", async () => {
-  const link = document.getElementById("postShareLink").value;
-  if (navigator.share) {
-    try { await navigator.share({ title: "Link postingan", url: link }); return; } catch (err) { /* dibatalkan, lanjut fallback */ }
-  }
-  try {
-    await navigator.clipboard.writeText(link);
-    const btn = document.getElementById("postShareBtn");
-    const original = btn.textContent;
-    btn.textContent = "Tersalin!";
-    setTimeout(() => { btn.textContent = original; }, 1500);
-  } catch (err) { /* abaikan */ }
-});
 </script>
 </body>
 </html>
