@@ -265,6 +265,13 @@
       </div>
     </div>
     <div class="field">
+      <label>Jarak Logo Header dengan Tulisan Brand (px)</label>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <input type="range" id="logoTopGap" min="0" max="30" value="8" style="flex:1;">
+        <span class="default-hint" id="logoTopGapVal">8px</span>
+      </div>
+    </div>
+    <div class="field">
       <label>Ukuran Logo Footer Dark (px)</label>
       <div style="display:flex; align-items:center; gap:12px;">
         <input type="range" id="logoBottomSize" min="16" max="60" value="24" style="flex:1;">
@@ -272,10 +279,10 @@
       </div>
     </div>
     <div class="field">
-      <label>Jarak Logo dengan Tulisan Brand (px)</label>
+      <label>Jarak Logo Footer Dark dengan Tulisan Brand (px)</label>
       <div style="display:flex; align-items:center; gap:12px;">
-        <input type="range" id="logoGap" min="0" max="30" value="8" style="flex:1;">
-        <span class="default-hint" id="logoGapVal">8px</span>
+        <input type="range" id="logoBottomGap" min="0" max="30" value="10" style="flex:1;">
+        <span class="default-hint" id="logoBottomGapVal">10px</span>
       </div>
     </div>
     <div class="field">
@@ -598,7 +605,7 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
 });
 
 const fieldIds = [
-  "brandName","groupName","logoTopUrl","logoBottomUrl","avatarUrl",
+  "brandName","groupName","logoTopUrl","logoTopSize","logoTopGap","logoBottomUrl","logoBottomSize","logoBottomGap","avatarUrl",
   "joinUrl","joinSeconds","downloadUrl","downloadSeconds",
   "xUrl","xSeconds","youtubeUrl","youtubeSeconds",
   "instagramUrl","instagramSeconds","facebookUrl","facebookSeconds",
@@ -621,14 +628,17 @@ async function loadData() {
   updatePreview("avatarPreview", data.avatarUrl);
 
   const logoTopSizeVal = data.logoTopSize ?? 26;
+  const logoTopGapVal = data.logoTopGap ?? 8;
   const logoBottomSizeVal = data.logoBottomSize ?? 24;
-  const logoGapVal = data.logoGap ?? 8;
+  const logoBottomGapVal = data.logoBottomGap ?? 10;
   document.getElementById("logoTopSize").value = logoTopSizeVal;
+  document.getElementById("logoTopGap").value = logoTopGapVal;
   document.getElementById("logoBottomSize").value = logoBottomSizeVal;
-  document.getElementById("logoGap").value = logoGapVal;
+  document.getElementById("logoBottomGap").value = logoBottomGapVal;
   document.getElementById("logoTopSizeVal").textContent = logoTopSizeVal + "px";
+  document.getElementById("logoTopGapVal").textContent = logoTopGapVal + "px";
   document.getElementById("logoBottomSizeVal").textContent = logoBottomSizeVal + "px";
-  document.getElementById("logoGapVal").textContent = logoGapVal + "px";
+  document.getElementById("logoBottomGapVal").textContent = logoBottomGapVal + "px";
 
   const links = data.links || {};
   setLink("headerDownload", links.headerDownload);
@@ -731,11 +741,14 @@ document.getElementById("avatarFile").addEventListener("change", (e) => {
 document.getElementById("logoTopSize").addEventListener("input", (e) => {
   document.getElementById("logoTopSizeVal").textContent = e.target.value + "px";
 });
+document.getElementById("logoTopGap").addEventListener("input", (e) => {
+  document.getElementById("logoTopGapVal").textContent = e.target.value + "px";
+});
 document.getElementById("logoBottomSize").addEventListener("input", (e) => {
   document.getElementById("logoBottomSizeVal").textContent = e.target.value + "px";
 });
-document.getElementById("logoGap").addEventListener("input", (e) => {
-  document.getElementById("logoGapVal").textContent = e.target.value + "px";
+document.getElementById("logoBottomGap").addEventListener("input", (e) => {
+  document.getElementById("logoBottomGapVal").textContent = e.target.value + "px";
 });
 
 document.getElementById("saveBtn").addEventListener("click", async () => {
@@ -751,8 +764,9 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
     logoTopUrl: document.getElementById("logoTopUrl").value.trim(),
     logoBottomUrl: document.getElementById("logoBottomUrl").value.trim(),
     logoTopSize: Number(document.getElementById("logoTopSize").value) || 26,
+    logoTopGap: Number(document.getElementById("logoTopGap").value) || 8,
     logoBottomSize: Number(document.getElementById("logoBottomSize").value) || 24,
-    logoGap: Number(document.getElementById("logoGap").value) || 8,
+    logoBottomGap: Number(document.getElementById("logoBottomGap").value) || 10,
     avatarUrl: document.getElementById("avatarUrl").value.trim(),
     copyrightText: document.getElementById("copyrightText").value.trim(),
     defaultSeconds: Number(document.getElementById("defaultSeconds").value) || 5,
