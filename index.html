@@ -68,13 +68,13 @@
   }
   .dl-icon svg{width:18px;height:18px;fill:#fff;}
   .brand{
-    display:flex; align-items:center; gap:0px;
+    display:flex; align-items:center; gap:8px;
     font-weight:700; font-size:20px;
     color:var(--green-dark);
     text-decoration:none;
   }
   .brand img{
-    width:40px; height:40px;
+    width:26px; height:26px;
     display:block;
     object-fit:contain;
     flex-shrink:0;
@@ -182,13 +182,13 @@
     padding:36px 24px 30px;
   }
   .foot-brand{
-    display:flex; align-items:center; gap:7px;
+    display:flex; align-items:center; gap:10px;
     color:#fff; font-weight:700; font-size:19px;
     margin-bottom:28px;
     text-decoration:none;
   }
   .foot-brand img{
-    width:36px; height:36px;
+    width:24px; height:24px;
     object-fit:contain;
     flex-shrink:0;
     display:block;
@@ -402,6 +402,10 @@ function render(utama, post) {
   document.getElementById("soc-fb").href = `redirect.html?to=facebook${q}`;
 }
 
+function pick(postVal, utamaVal) {
+  return (postVal === undefined || postVal === null || postVal === "") ? utamaVal : postVal;
+}
+
 function mergeWithUtama(utama, post) {
   return {
     brandName: post.brandName || utama.brandName,
@@ -410,9 +414,9 @@ function mergeWithUtama(utama, post) {
     logoTopUrl: post.logoTopUrl || utama.logoTopUrl,
     logoBottomUrl: post.logoBottomUrl || utama.logoBottomUrl,
     logoTopSize: post.logoTopSize || utama.logoTopSize,
-    logoTopGap: post.logoTopGap || utama.logoTopGap,
+    logoTopGap: pick(post.logoTopGap, utama.logoTopGap),
     logoBottomSize: post.logoBottomSize || utama.logoBottomSize,
-    logoBottomGap: post.logoBottomGap || utama.logoBottomGap,
+    logoBottomGap: pick(post.logoBottomGap, utama.logoBottomGap),
     avatarUrl: post.avatarUrl || utama.avatarUrl,
     copyrightText: post.copyrightText || utama.copyrightText
   };
