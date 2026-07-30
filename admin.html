@@ -840,10 +840,12 @@ async function renderPostList() {
         <small>${d.groupName ? d.groupName : "(pakai Nama Grup Data Utama)"}</small>
       </div>
       <div class="post-actions">
+        <button data-act="share">Bagikan</button>
         <button data-act="edit">Edit</button>
         <button data-act="delete" class="danger">Hapus</button>
       </div>
     `;
+    item.querySelector('[data-act="share"]').addEventListener("click", (e) => sharePostLink(docSnap.id, e.currentTarget));
     item.querySelector('[data-act="edit"]').addEventListener("click", () => openPostEditor(docSnap.id, d));
     item.querySelector('[data-act="delete"]').addEventListener("click", () => deletePost(docSnap.id));
     listEl.appendChild(item);
@@ -984,12 +986,29 @@ document.getElementById("savePostBtn").addEventListener("click", async () => {
   btn.textContent = "Simpan Postingan";
 });
 
+function getPostShareLink(id) {
+  return `${window.location.origin}${window.location.pathname.replace(/admin\.html$/, "")}index.html?id=${encodeURIComponent(id)}`;
+}
+
 function showPostShareLink(id) {
-  const link = `${window.location.origin}${window.location.pathname.replace(/admin\.html$/, "")}index.html?id=${encodeURIComponent(id)}`;
+  const link = getPostShareLink(id);
   const box = document.getElementById("postShareBox");
   const input = document.getElementById("postShareLink");
   input.value = link;
   box.style.display = "flex";
+}
+
+async function sharePostLink(id, btn) {
+  const link = getPostShareLink(id);
+  if (navigator.share) {
+    try { await navigator.share({ title: "Link postingan", url: link }); return; } catch (err) { /* dibatalkan, lanjut fallback */ }
+  }
+  try {
+    await navigator.clipboard.writeText(link);
+    const original = btn.textContent;
+    btn.textContent = "Tersalin!";
+    setTimeout(() => { btn.textContent = original; }, 1500);
+  } catch (err) { /* abaikan */ }
 }
 
 document.getElementById("postShareBtn").addEventListener("click", async () => {
