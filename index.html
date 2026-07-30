@@ -68,13 +68,13 @@
   }
   .dl-icon svg{width:18px;height:18px;fill:#fff;}
   .brand{
-    display:flex; align-items:center; gap:0px;
+    display:flex; align-items:center; gap:8px;
     font-weight:700; font-size:20px;
     color:var(--green-dark);
     text-decoration:none;
   }
   .brand img{
-    width:42px; height:42px;
+    width:26px; height:26px;
     display:block;
     object-fit:contain;
     flex-shrink:0;
@@ -350,12 +350,33 @@ function render(utama, post) {
   document.getElementById("brandNameBottom").textContent = data.brandName || "GrupKu";
   const logoTop = document.getElementById("logoTop");
   const logoBottom = document.getElementById("logoBottom");
-  if (data.logoUrl) {
-    logoTop.src = data.logoUrl; logoTop.style.display = "block";
-    logoBottom.src = data.logoUrl; logoBottom.style.display = "block";
+  // Logo header & footer independen. Jika salah satu kosong, pakai yang lain sebagai fallback
+  // agar gambar tidak rusak/kosong.
+  const logoTopSrc = data.logoTopUrl || data.logoBottomUrl || "";
+  const logoBottomSrc = data.logoBottomUrl || data.logoTopUrl || "";
+  if (logoTopSrc) {
+    logoTop.src = logoTopSrc; logoTop.style.display = "block";
   } else {
     logoTop.style.display = "none";
+  }
+  if (logoBottomSrc) {
+    logoBottom.src = logoBottomSrc; logoBottom.style.display = "block";
+  } else {
     logoBottom.style.display = "none";
+  }
+  // Ukuran logo & jarak logo-brand: hanya diterapkan jika sudah diatur di dashboard.
+  // Jika belum ada pengaturan baru, elemen tetap memakai ukuran/jarak bawaan dari CSS (desain lama).
+  if (data.logoTopSize) {
+    logoTop.style.width = data.logoTopSize + "px";
+    logoTop.style.height = data.logoTopSize + "px";
+  }
+  if (data.logoBottomSize) {
+    logoBottom.style.width = data.logoBottomSize + "px";
+    logoBottom.style.height = data.logoBottomSize + "px";
+  }
+  if (data.logoGap !== undefined && data.logoGap !== null && data.logoGap !== "") {
+    document.getElementById("brandLink").style.gap = data.logoGap + "px";
+    document.getElementById("brandBottomLink").style.gap = data.logoGap + "px";
   }
   if (data.avatarUrl) {
     document.getElementById("avatarImg").src = data.avatarUrl; // foto profil: langsung, tidak lewat redirect
@@ -383,7 +404,11 @@ function mergeWithUtama(utama, post) {
     brandName: post.brandName || utama.brandName,
     groupName: post.groupName || utama.groupName,
     inviteText: post.inviteText || utama.inviteText,
-    logoUrl: post.logoUrl || utama.logoUrl,
+    logoTopUrl: post.logoTopUrl || utama.logoTopUrl,
+    logoBottomUrl: post.logoBottomUrl || utama.logoBottomUrl,
+    logoTopSize: post.logoTopSize || utama.logoTopSize,
+    logoBottomSize: post.logoBottomSize || utama.logoBottomSize,
+    logoGap: post.logoGap || utama.logoGap,
     avatarUrl: post.avatarUrl || utama.avatarUrl,
     copyrightText: post.copyrightText || utama.copyrightText
   };
