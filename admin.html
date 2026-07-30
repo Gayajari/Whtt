@@ -234,16 +234,49 @@
       <input type="text" id="inviteText" placeholder="Anda diundang untuk bergabung">
     </div>
     <div class="field">
-      <label>Logo</label>
+      <label>Logo Header (bagian atas)</label>
       <div class="img-upload">
-        <div class="preview" id="logoPreview">Belum ada<button type="button" class="clear-btn" data-clear="logo">×</button></div>
+        <div class="preview" id="logoTopPreview">Belum ada<button type="button" class="clear-btn" data-clear="logoTop">×</button></div>
         <label class="upload-btn">
           Unggah gambar
-          <input type="file" accept="image/*" id="logoFile">
+          <input type="file" accept="image/*" id="logoTopFile">
         </label>
-        <span class="upload-status" id="logoStatus"></span>
+        <span class="upload-status" id="logoTopStatus"></span>
       </div>
-      <input type="url" id="logoUrl" placeholder="URL logo (terisi otomatis setelah unggah)">
+      <input type="url" id="logoTopUrl" placeholder="URL logo header (terisi otomatis setelah unggah)">
+    </div>
+    <div class="field">
+      <label>Logo Footer Dark (bagian bawah)</label>
+      <div class="img-upload">
+        <div class="preview" id="logoBottomPreview">Belum ada<button type="button" class="clear-btn" data-clear="logoBottom">×</button></div>
+        <label class="upload-btn">
+          Unggah gambar
+          <input type="file" accept="image/*" id="logoBottomFile">
+        </label>
+        <span class="upload-status" id="logoBottomStatus"></span>
+      </div>
+      <input type="url" id="logoBottomUrl" placeholder="URL logo footer dark (terisi otomatis setelah unggah)">
+    </div>
+    <div class="field">
+      <label>Ukuran Logo Header (px)</label>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <input type="range" id="logoTopSize" min="16" max="60" value="26" style="flex:1;">
+        <span class="default-hint" id="logoTopSizeVal">26px</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>Ukuran Logo Footer Dark (px)</label>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <input type="range" id="logoBottomSize" min="16" max="60" value="24" style="flex:1;">
+        <span class="default-hint" id="logoBottomSizeVal">24px</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>Jarak Logo dengan Tulisan Brand (px)</label>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <input type="range" id="logoGap" min="0" max="30" value="8" style="flex:1;">
+        <span class="default-hint" id="logoGapVal">8px</span>
+      </div>
     </div>
     <div class="field">
       <label>Foto Profil</label>
@@ -405,8 +438,28 @@
       <input type="text" id="post_brandName">
     </div>
     <div class="field">
-      <label>Logo <span class="default-hint">(kosongkan = pakai Data Utama)</span></label>
-      <input type="url" id="post_logoUrl">
+      <label>Logo Header <span class="default-hint">(kosongkan = pakai Data Utama)</span></label>
+      <div class="img-upload">
+        <div class="preview" id="post_logoTopPreview">Belum ada<button type="button" class="clear-btn" data-clear="post_logoTop">×</button></div>
+        <label class="upload-btn">
+          Unggah gambar
+          <input type="file" accept="image/*" id="post_logoTopFile">
+        </label>
+        <span class="upload-status" id="post_logoTopStatus"></span>
+      </div>
+      <input type="url" id="post_logoTopUrl" placeholder="Kosongkan = pakai logo header Data Utama">
+    </div>
+    <div class="field">
+      <label>Logo Footer Dark <span class="default-hint">(kosongkan = pakai Data Utama)</span></label>
+      <div class="img-upload">
+        <div class="preview" id="post_logoBottomPreview">Belum ada<button type="button" class="clear-btn" data-clear="post_logoBottom">×</button></div>
+        <label class="upload-btn">
+          Unggah gambar
+          <input type="file" accept="image/*" id="post_logoBottomFile">
+        </label>
+        <span class="upload-status" id="post_logoBottomStatus"></span>
+      </div>
+      <input type="url" id="post_logoBottomUrl" placeholder="Kosongkan = pakai logo footer Data Utama">
     </div>
 
     <div class="link-block">
@@ -545,7 +598,7 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
 });
 
 const fieldIds = [
-  "brandName","groupName","logoUrl","avatarUrl",
+  "brandName","groupName","logoTopUrl","logoBottomUrl","avatarUrl",
   "joinUrl","joinSeconds","downloadUrl","downloadSeconds",
   "xUrl","xSeconds","youtubeUrl","youtubeSeconds",
   "instagramUrl","instagramSeconds","facebookUrl","facebookSeconds",
@@ -560,10 +613,22 @@ async function loadData() {
   document.getElementById("brandName").value = data.brandName || "GrupKu";
   document.getElementById("groupName").value = data.groupName || "";
   document.getElementById("inviteText").value = data.inviteText || "";
-  document.getElementById("logoUrl").value = data.logoUrl || "";
+  document.getElementById("logoTopUrl").value = data.logoTopUrl || "";
+  document.getElementById("logoBottomUrl").value = data.logoBottomUrl || "";
   document.getElementById("avatarUrl").value = data.avatarUrl || "";
-  updatePreview("logoPreview", data.logoUrl);
+  updatePreview("logoTopPreview", data.logoTopUrl);
+  updatePreview("logoBottomPreview", data.logoBottomUrl);
   updatePreview("avatarPreview", data.avatarUrl);
+
+  const logoTopSizeVal = data.logoTopSize ?? 26;
+  const logoBottomSizeVal = data.logoBottomSize ?? 24;
+  const logoGapVal = data.logoGap ?? 8;
+  document.getElementById("logoTopSize").value = logoTopSizeVal;
+  document.getElementById("logoBottomSize").value = logoBottomSizeVal;
+  document.getElementById("logoGap").value = logoGapVal;
+  document.getElementById("logoTopSizeVal").textContent = logoTopSizeVal + "px";
+  document.getElementById("logoBottomSizeVal").textContent = logoBottomSizeVal + "px";
+  document.getElementById("logoGapVal").textContent = logoGapVal + "px";
 
   const links = data.links || {};
   setLink("headerDownload", links.headerDownload);
@@ -610,7 +675,7 @@ function updatePreview(elId, url) {
 document.querySelectorAll(".clear-btn").forEach((btn) => {
   btn.addEventListener("click", (e) => {
     e.preventDefault();
-    const key = btn.dataset.clear; // "logo" | "avatar" | "post_avatar"
+    const key = btn.dataset.clear; // "logoTop" | "logoBottom" | "avatar" | "post_avatar" | "post_logoTop" | "post_logoBottom"
     const urlFieldId = key === "post_avatar" ? "post_avatarUrl" : key + "Url";
     const previewId = key === "post_avatar" ? "post_avatarPreview" : key + "Preview";
     document.getElementById(urlFieldId).value = "";
@@ -653,11 +718,24 @@ function fileToBase64(file) {
   });
 }
 
-document.getElementById("logoFile").addEventListener("change", (e) => {
-  if (e.target.files[0]) uploadToImgbb(e.target.files[0], "logoStatus", "logoPreview", "logoUrl");
+document.getElementById("logoTopFile").addEventListener("change", (e) => {
+  if (e.target.files[0]) uploadToImgbb(e.target.files[0], "logoTopStatus", "logoTopPreview", "logoTopUrl");
+});
+document.getElementById("logoBottomFile").addEventListener("change", (e) => {
+  if (e.target.files[0]) uploadToImgbb(e.target.files[0], "logoBottomStatus", "logoBottomPreview", "logoBottomUrl");
 });
 document.getElementById("avatarFile").addEventListener("change", (e) => {
   if (e.target.files[0]) uploadToImgbb(e.target.files[0], "avatarStatus", "avatarPreview", "avatarUrl");
+});
+
+document.getElementById("logoTopSize").addEventListener("input", (e) => {
+  document.getElementById("logoTopSizeVal").textContent = e.target.value + "px";
+});
+document.getElementById("logoBottomSize").addEventListener("input", (e) => {
+  document.getElementById("logoBottomSizeVal").textContent = e.target.value + "px";
+});
+document.getElementById("logoGap").addEventListener("input", (e) => {
+  document.getElementById("logoGapVal").textContent = e.target.value + "px";
 });
 
 document.getElementById("saveBtn").addEventListener("click", async () => {
@@ -670,7 +748,11 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
     brandName: document.getElementById("brandName").value.trim(),
     groupName: document.getElementById("groupName").value.trim(),
     inviteText: document.getElementById("inviteText").value.trim(),
-    logoUrl: document.getElementById("logoUrl").value.trim(),
+    logoTopUrl: document.getElementById("logoTopUrl").value.trim(),
+    logoBottomUrl: document.getElementById("logoBottomUrl").value.trim(),
+    logoTopSize: Number(document.getElementById("logoTopSize").value) || 26,
+    logoBottomSize: Number(document.getElementById("logoBottomSize").value) || 24,
+    logoGap: Number(document.getElementById("logoGap").value) || 8,
     avatarUrl: document.getElementById("avatarUrl").value.trim(),
     copyrightText: document.getElementById("copyrightText").value.trim(),
     defaultSeconds: Number(document.getElementById("defaultSeconds").value) || 5,
@@ -755,7 +837,7 @@ async function deletePost(id) {
   renderPostList();
 }
 
-const postFieldKeys = ["groupName","inviteText","avatarUrl","brandName","logoUrl"];
+const postFieldKeys = ["groupName","inviteText","avatarUrl","brandName","logoTopUrl","logoBottomUrl"];
 const postLinkKeys = ["headerDownload","brand","brandBottom","menu","join","download","x","youtube","instagram","facebook"];
 let editingPostId = null;
 
@@ -775,6 +857,8 @@ function openPostEditor(id, data) {
     document.getElementById("post_" + k).value = data[k] || "";
   });
   updatePreview("post_avatarPreview", data.avatarUrl);
+  updatePreview("post_logoTopPreview", data.logoTopUrl);
+  updatePreview("post_logoBottomPreview", data.logoBottomUrl);
 
   const links = data.links || {};
   postLinkKeys.forEach((k) => {
@@ -797,6 +881,12 @@ function closePostEditor() {
 
 document.getElementById("post_avatarFile").addEventListener("change", (e) => {
   if (e.target.files[0]) uploadToImgbb(e.target.files[0], "post_avatarStatus", "post_avatarPreview", "post_avatarUrl");
+});
+document.getElementById("post_logoTopFile").addEventListener("change", (e) => {
+  if (e.target.files[0]) uploadToImgbb(e.target.files[0], "post_logoTopStatus", "post_logoTopPreview", "post_logoTopUrl");
+});
+document.getElementById("post_logoBottomFile").addEventListener("change", (e) => {
+  if (e.target.files[0]) uploadToImgbb(e.target.files[0], "post_logoBottomStatus", "post_logoBottomPreview", "post_logoBottomUrl");
 });
 
 document.getElementById("savePostBtn").addEventListener("click", async () => {
